@@ -35,8 +35,10 @@ const styles = {
   postContent: { padding: "12px" },
   author: { color: "#b9ffd4", fontSize: "12px", fontWeight: 800, margin: "0 0 6px" },
   authorLink: { color: "#b9ffd4", textDecoration: "none" },
+  postLink: { color: "inherit", textDecoration: "none" },
   body: { color: "#e2ebe5", fontSize: "13px", lineHeight: 1.5, margin: 0, overflowWrap: "anywhere" as const, whiteSpace: "pre-wrap" as const },
   meta: { color: "#84958b", display: "flex", flexWrap: "wrap" as const, gap: "9px", fontSize: "10px", marginTop: "8px" },
+  openPost: { color: "#b9ffd4", fontSize: "11px", fontWeight: 800, marginTop: "9px" },
   media: { aspectRatio: "16 / 10", background: "#050807", borderTop: "1px solid #1f382b", maxHeight: "520px", overflow: "hidden", width: "100%" },
   mediaImage: { display: "block", height: "100%", objectFit: "contain" as const, width: "100%" },
   mediaPlaceholder: { color: "#84958b", display: "grid", height: "100%", placeItems: "center", width: "100%" },
@@ -125,6 +127,7 @@ export default function PublicDiscoveryFeed() {
             const imageUrl = post.ImageURLs?.[0]
             const videoUrl = post.VideoURLs?.[0]
             const hasMedia = Boolean(imageUrl || videoUrl)
+            const postHref = post.PostHashHex ? `/post/${post.PostHashHex}` : null
 
             return (
               <article key={post.PostHashHex ?? `${index}-${body}`} style={styles.post}>
@@ -133,7 +136,7 @@ export default function PublicDiscoveryFeed() {
                     {authorHref ? <a href={authorHref} style={styles.authorLink}>@{author}</a> : <>@{author}</>}
                     {date ? ` · ${date}` : ""}
                   </p>
-                  <p style={styles.body}>{body}</p>
+                  {postHref ? <a href={postHref} style={styles.postLink}><p style={styles.body}>{body}</p></a> : <p style={styles.body}>{body}</p>}
                   <div style={styles.meta} aria-label="Public post activity">
                     <span>Replies {replyCount}</span>
                     <span>Likes {count(post.LikeCount)}</span>
@@ -142,6 +145,7 @@ export default function PublicDiscoveryFeed() {
                     <span>Diamonds {count(post.DiamondCount)}</span>
                     {post.IsNFT ? <span>NFT</span> : null}
                   </div>
+                  {postHref ? <div style={styles.openPost}><a href={postHref} style={styles.authorLink}>Open post on VIA →</a></div> : null}
                   {replyCount > 0 && post.PostHashHex ? <PublicPostThread postHash={post.PostHashHex} replyCount={replyCount} /> : null}
                 </div>
                 {hasMedia ? (
