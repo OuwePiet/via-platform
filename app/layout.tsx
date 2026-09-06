@@ -1,24 +1,23 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './global.css'
+import { siteConfig } from './site-config'
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://viadeso.online'),
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: 'VIA — DeSo NFT platform',
-    template: '%s | VIA',
+    default: `${siteConfig.name} — DeSo NFT platform`,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    'Explore DeSo NFT collections through VIA, directly from the DeSo blockchain.',
+  description: siteConfig.description,
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'VIA — DeSo NFT platform',
-    description:
-      'Explore DeSo NFT collections through VIA, directly from the DeSo blockchain.',
+    title: `${siteConfig.name} — DeSo NFT platform`,
+    description: siteConfig.description,
     url: '/',
-    siteName: 'VIA',
+    siteName: siteConfig.name,
     type: 'website',
   },
   icons: {
