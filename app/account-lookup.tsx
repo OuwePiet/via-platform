@@ -12,6 +12,8 @@ type DeSoProfile = {
   Description?: string
 }
 
+type ProfileView = "nfts" | "social"
+
 function shortKey(publicKey?: string) {
   if (!publicKey) return "Public key unavailable"
   return `${publicKey.slice(0, 10)}...${publicKey.slice(-8)}`
@@ -36,6 +38,9 @@ const styles = {
   choiceButton: { alignItems: "center", background: "transparent", border: 0, borderRadius: "9px", color: "#b9ffd4", cursor: "pointer", display: "flex", gap: "10px", padding: "10px", textAlign: "left" as const, width: "100%" },
   avatar: { borderRadius: "50%", height: "36px", objectFit: "cover" as const, width: "36px" },
   avatarFallback: { alignItems: "center", background: "#254233", borderRadius: "50%", color: "#b9ffd4", display: "flex", fontWeight: 800, height: "36px", justifyContent: "center", width: "36px" },
+  tabs: { display: "flex", flexWrap: "wrap" as const, gap: "8px", marginTop: "16px" },
+  tab: { background: "transparent", border: "1px solid #285f40", borderRadius: "999px", color: "#b9ffd4", cursor: "pointer", fontSize: "12px", fontWeight: 800, padding: "8px 12px" },
+  activeTab: { background: "#5cff9d", color: "#050807" },
 }
 
 export default function AccountLookup({ onAccountSelected }: { onAccountSelected?: () => void }) {
@@ -44,19 +49,22 @@ export default function AccountLookup({ onAccountSelected }: { onAccountSelected
   const [matches, setMatches] = useState<DeSoProfile[]>([])
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [activeView, setActiveView] = useState<ProfileView>("nfts")
   const [autoLoadNFTs, setAutoLoadNFTs] = useState(false)
   const [autoLoadSocial, setAutoLoadSocial] = useState(false)
 
-  const rememberSelectedAccount = (selectedProfile: DeSoProfile) => {
+  const writeAccountUrl = (selectedProfile: DeSoProfile, view?: ProfileView) => {
     if (typeof window === "undefined" || !selectedProfile.Username || !selectedProfile.PublicKeyBase58Check) return
     const params = new URLSearchParams({ account: selectedProfile.Username, accountKey: selectedProfile.PublicKeyBase58Check })
+    if (view) params.set("view", view)
     window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}#account-lookup-heading`)
   }
 
   const selectProfile = (selectedProfile: DeSoProfile) => {
-    rememberSelectedAccount(selectedProfile)
+    writeAccountUrl(selectedProfile, "nfts")
     setUsername(selectedProfile.Username ?? "")
     setProfile(selectedProfile)
+    setActiveView("nfts")
     setAutoLoadNFTs(false)
     setAutoLoadSocial(false)
     onAccountSelected?.()
@@ -93,8 +101,9 @@ export default function AccountLookup({ onAccountSelected }: { onAccountSelected
       const exactProfile = usableProfiles.find((candidate) => candidate.Username?.toLocaleLowerCase() === normalizedUsername.toLocaleLowerCase())
 
       if (exactProfile) {
-        rememberSelectedAccount(exactProfile)
+        writeAccountUrl(exactProfile, "nfts")
         setProfile(exactProfile)
+        setActiveView("nfts")
         onAccountSelected?.()
         return
       }
@@ -115,12 +124,14 @@ export default function AccountLookup({ onAccountSelected }: { onAccountSelected
     const requestedAccount = params.get("account")
     const requestedPublicKey = params.get("accountKey")
     const view = params.get("view")
-    const shouldOpenNFTs = view === "nfts"
-    const shouldOpenSocial = view === "social"
+    const requestedView: ProfileView = view === "social" ? "social" : "nfts"
+    const shouldOpenNFTs = requestedView === "nfts" && view === "nfts"
+    const shouldOpenSocial = requestedView === "social"
+    setActiveView(requestedView)
     setAutoLoadNFTs(shouldOpenNFTs)
     setAutoLoadSocial(shouldOpenSocial)
 
-    if (requestedAccount && requestedPublicKey && (shouldOpenNFTs || shouldOpenSocial)) {
+    if (requestedAccount && requestedPublicKey && (view === "nfts" || view === "social")) {
       setUsername(requestedAccount)
       setProfile({ Username: requestedAccount, PublicKeyBase58Check: requestedPublicKey })
       onAccountSelected?.()
@@ -131,9 +142,18 @@ export default function AccountLookup({ onAccountSelected }: { onAccountSelected
 
   const findAccount = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+    setActiveView("nfts")
     setAutoLoadNFTs(false)
     setAutoLoadSocial(false)
     void lookupAccount(username)
+  }
+
+  const changeView = (view: ProfileView) => {
+    if (!profile) return
+    setActiveView(view)
+    setAutoLoadNFTs(view === "nfts")
+    setAutoLoadSocial(view === "social")
+    writeAccountUrl(profile, view)
   }
 
   return (
@@ -160,8 +180,14 @@ export default function AccountLookup({ onAccountSelected }: { onAccountSelected
               <summary style={styles.keySummary}>View full public key</summary>
               <code style={styles.code}>{profile.PublicKeyBase58Check}</code>
             </details>
-            <PublicAccountNFTs key={`nfts-${profile.PublicKeyBase58Check}`} publicKey={profile.PublicKeyBase58Check!} username={profile.Username!} autoLoad={autoLoadNFTs} />
-            <PublicSocialFeed key={`social-${profile.PublicKeyBase58Check}`} publicKey={profile.PublicKeyBase58Check!} username={profile.Username!} autoLoad={autoLoadSocial} />
+
+            <nav style={styles.tabs} aria-label={`Public views for @${profile.Username}`}>
+              <button type="button" aria-pressed={activeView === "nfts"} style={{ ...styles.tab, ...(activeView === "nfts" ? styles.activeTab : {}) }} onClick={() => changeView("nfts")}>NFT collection</button>
+              <button type="button" aria-pressed={activeView === "social"} style={{ ...styles.tab, ...(activeView === "social" ? styles.activeTab : {}) }} onClick={() => changeView("social")}>Social posts</button>
+            </nav>
+
+            {activeView === "nfts" ? <PublicAccountNFTs key={`nfts-${profile.PublicKeyBase58Check}`} publicKey={profile.PublicKeyBase58Check!} username={profile.Username!} autoLoad={autoLoadNFTs} /> : null}
+            {activeView === "social" ? <PublicSocialFeed key={`social-${profile.PublicKeyBase58Check}`} publicKey={profile.PublicKeyBase58Check!} username={profile.Username!} autoLoad={autoLoadSocial} /> : null}
           </div>
         ) : null}
 
