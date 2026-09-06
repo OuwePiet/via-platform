@@ -52,6 +52,11 @@ function username(post: FeedPost) {
   return name ? `@${name}` : "DeSo user"
 }
 
+function accountHref(post: FeedPost) {
+  const name = post.ProfileEntryResponse?.Username
+  return name ? `/?account=${encodeURIComponent(name)}` : "/"
+}
+
 function bodyText(body?: string) {
   if (!body) return "Post without text"
   return body.length > 420 ? `${body.slice(0, 417)}...` : body
@@ -68,24 +73,6 @@ const styles = {
   container: {
     maxWidth: "760px",
     margin: "0 auto",
-  },
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "16px",
-    marginBottom: "28px",
-  },
-  brand: {
-    color: "#5cff9d",
-    fontSize: "14px",
-    fontWeight: 700,
-    letterSpacing: "0.18em",
-  },
-  link: {
-    color: "#d9e4dd",
-    textDecoration: "none",
-    fontSize: "14px",
   },
   heading: {
     fontSize: "clamp(28px, 5vw, 44px)",
@@ -107,18 +94,35 @@ const styles = {
     padding: "18px",
   },
   creator: {
+    display: "inline-block",
     color: "#5cff9d",
     fontWeight: 700,
     margin: "0 0 10px",
+    textDecoration: "none",
   },
   body: {
     whiteSpace: "pre-wrap" as const,
     lineHeight: 1.55,
     margin: "0 0 14px",
   },
+  mediaList: {
+    display: "grid",
+    gap: "10px",
+    margin: "0 0 14px",
+  },
+  media: {
+    display: "block",
+    width: "100%",
+    maxHeight: "520px",
+    objectFit: "contain" as const,
+    background: "#070b09",
+    border: "1px solid #1d3529",
+    borderRadius: "12px",
+  },
   stats: {
     color: "#91a298",
     fontSize: "13px",
+    lineHeight: 1.5,
   },
   empty: {
     color: "#a9b8af",
@@ -132,15 +136,11 @@ export default async function FeedPage() {
   return (
     <main style={styles.page}>
       <div style={styles.container}>
-        <nav style={styles.nav} aria-label="VIA navigation">
-          <span style={styles.brand}>VIA</span>
-          <a href="/" style={styles.link}>NFT collection</a>
-        </nav>
-
         <h1 style={styles.heading}>DeSo feed</h1>
         <p style={styles.intro}>
-          Public social posts loaded read-only from DeSo. Posting, liking,
-          reposting and diamonds are deliberately not enabled in this step.
+          Public posts loaded read-only from DeSo. Open a creator to view that
+          account&apos;s NFT collection on VIA. Posting, liking, reposting and
+          diamonds remain disabled in this step.
         </p>
 
         {posts.length === 0 ? (
@@ -149,8 +149,35 @@ export default async function FeedPage() {
           <section style={styles.list} aria-label="DeSo posts">
             {posts.map((post, index) => (
               <article key={post.PostHashHex ?? index} style={styles.card}>
-                <p style={styles.creator}>{username(post)}</p>
+                <a href={accountHref(post)} style={styles.creator}>
+                  {username(post)}
+                </a>
+
                 <p style={styles.body}>{bodyText(post.Body)}</p>
+
+                {(post.ImageURLs?.length || post.VideoURLs?.length) ? (
+                  <div style={styles.mediaList}>
+                    {post.ImageURLs?.slice(0, 4).map((url) => (
+                      <img
+                        key={url}
+                        src={url}
+                        alt={`Post media by ${username(post)}`}
+                        loading="lazy"
+                        style={styles.media}
+                      />
+                    ))}
+                    {post.VideoURLs?.slice(0, 2).map((url) => (
+                      <video
+                        key={url}
+                        src={url}
+                        controls
+                        preload="metadata"
+                        style={styles.media}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+
                 <div style={styles.stats}>
                   {post.LikeCount ?? 0} likes · {post.CommentCount ?? 0} replies · {post.RepostCount ?? 0} reposts · {post.DiamondCount ?? 0} diamonds
                 </div>
