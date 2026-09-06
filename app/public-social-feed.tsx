@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react"
 import { fetchDeSo } from "./deso-api"
+import NFTMedia from "./nft-media"
 
 const PAGE_SIZE = 25
 
@@ -57,6 +58,9 @@ const styles = {
     background: "#07100b",
     border: "1px solid #285f40",
     borderRadius: "12px",
+    overflow: "hidden",
+  },
+  postContent: {
     padding: "12px",
   },
   author: {
@@ -72,6 +76,27 @@ const styles = {
     margin: 0,
     whiteSpace: "pre-wrap" as const,
     overflowWrap: "anywhere" as const,
+  },
+  media: {
+    aspectRatio: "16 / 10",
+    background: "#050807",
+    borderTop: "1px solid #1f382b",
+    maxHeight: "520px",
+    overflow: "hidden",
+    width: "100%",
+  },
+  mediaImage: {
+    display: "block",
+    height: "100%",
+    objectFit: "contain" as const,
+    width: "100%",
+  },
+  mediaPlaceholder: {
+    color: "#84958b",
+    display: "grid",
+    height: "100%",
+    placeItems: "center",
+    width: "100%",
   },
   meta: {
     color: "#84958b",
@@ -213,21 +238,38 @@ export default function PublicSocialFeed({
           const date = formatDate(post.TimestampNanos)
           const author = post.ProfileEntryResponse?.Username ?? username
           const body = post.Body?.trim() || (post.IsNFT ? "NFT post" : "Post without text")
+          const imageUrl = post.ImageURLs?.[0]
+          const videoUrl = post.VideoURLs?.[0]
+          const hasMedia = Boolean(imageUrl || videoUrl)
 
           return (
             <article key={post.PostHashHex ?? `${index}-${body}`} style={styles.post}>
-              <p style={styles.author}>@{author}{date ? ` · ${date}` : ""}</p>
-              <p style={styles.body}>{body}</p>
-              <div style={styles.meta} aria-label="Public post activity">
-                <span>Replies {safeCount(post.CommentCount)}</span>
-                <span>Likes {safeCount(post.LikeCount)}</span>
-                <span>Reposts {safeCount(post.RepostCount)}</span>
-                <span>Quotes {safeCount(post.QuoteRepostCount)}</span>
-                <span>Diamonds {safeCount(post.DiamondCount)}</span>
-                {post.ImageURLs?.length ? <span>Image</span> : null}
-                {post.VideoURLs?.length ? <span>Video</span> : null}
-                {post.IsNFT ? <span>NFT</span> : null}
+              <div style={styles.postContent}>
+                <p style={styles.author}>@{author}{date ? ` · ${date}` : ""}</p>
+                <p style={styles.body}>{body}</p>
+                <div style={styles.meta} aria-label="Public post activity">
+                  <span>Replies {safeCount(post.CommentCount)}</span>
+                  <span>Likes {safeCount(post.LikeCount)}</span>
+                  <span>Reposts {safeCount(post.RepostCount)}</span>
+                  <span>Quotes {safeCount(post.QuoteRepostCount)}</span>
+                  <span>Diamonds {safeCount(post.DiamondCount)}</span>
+                  {post.ImageURLs?.length ? <span>Image</span> : null}
+                  {post.VideoURLs?.length ? <span>Video</span> : null}
+                  {post.IsNFT ? <span>NFT</span> : null}
+                </div>
               </div>
+
+              {hasMedia ? (
+                <div style={styles.media}>
+                  <NFTMedia
+                    imageUrl={imageUrl}
+                    videoUrl={videoUrl}
+                    alt={`Public DeSo post by @${author}`}
+                    imageStyle={styles.mediaImage}
+                    placeholderStyle={styles.mediaPlaceholder}
+                  />
+                </div>
+              ) : null}
             </article>
           )
         })}
