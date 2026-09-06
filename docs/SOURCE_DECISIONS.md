@@ -77,6 +77,60 @@ Fase 2 / eerst technisch ontwerpen:
 - secret/key-management voor server-side functies;
 - DeSo Identity/derived-key signing zonder opslag van seedmateriaal.
 
+### Google-admin panel.docx
+Status: **bruikbare UX-specificatie, uitvoering Fase 2**.
+
+Bruikbaar:
+- adminpaneel als afzonderlijke, afgeschermde route;
+- handmatige goedkeuring voor badges/vinkjes;
+- duidelijke wachtrij, ranking- en prijsweergave als mogelijke beheerfuncties;
+- toegang nooit alleen met een wachtwoord beveiligen.
+
+Eerst ontwerpen/verifiëren:
+- exacte admin-identiteitscontrole en server-side autorisatie;
+- bron en integriteit van ranking/activiteitsdata;
+- CoinGecko/prijslogica;
+- eventuele Supabase-tabellen en RLS.
+
+Niet aannemen:
+- dat een client-side public-key check voldoende adminbeveiliging is;
+- dat 0%-commissie voor topgebruikers of genoemde prijsstaffels al een VIA-besluit zijn.
+
+### Google node rotetor, bij storing.docx
+Status: **goede richting, concrete nodes en garanties eerst verifiëren**.
+
+Bruikbaar:
+- DeSo-node-afhankelijkheid als reëel beschikbaarheidsrisico behandelen;
+- timeout, retry en later gecontroleerde multi-node failover ontwerpen;
+- read-only degradatiemodus verkiezen boven crashen wanneer live data tijdelijk niet beschikbaar is.
+
+Huidige code:
+- `app/deso-api.ts` heeft al timeout en retry op de primaire DeSo-node;
+- echte multi-node rotatie staat nog niet aan.
+
+Niet letterlijk overnemen:
+- ongeverifieerde publieke nodes als productie-fallback hardcoderen;
+- 1,5 seconde als universele harde timeout zonder metingen;
+- claims dat de site daardoor 'altijd online' blijft;
+- Supabase-cache/WhatsApp fallback aannemen terwijl die modules nog niet bestaan.
+
+### Google-testlijst-platform.docx en Google-testlijst-codes.docx
+Status: **waardevol als bron voor toekomstige acceptance tests, niet als uitvoerbaar script**.
+
+Nu bruikbaar:
+- responsive gedrag controleren;
+- publieke DeSo-profielen/posts/NFT-data tegen andere DeSo-interfaces vergelijken;
+- mobiele werking, foutafhandeling en deployment afzonderlijk testen;
+- latere transactiemodules alleen met expliciete end-to-end tests vrijgeven.
+
+Afwijzen of herschrijven:
+- derived private keys in `sessionStorage` opslaan;
+- platform seed phrases in relaycode/environment als generieke transactiesigner gebruiken;
+- claims van realtime synchronisatie binnen exact twee seconden zonder technische garantie;
+- automatische NFT-bid acceptatie en silent transactions voordat auth/signing veilig ontworpen zijn.
+
+De testlijsten worden later opgesplitst in: read-only Fase-1 tests, auth/signing tests, transactie/NFT tests en Fase-2 integratietests.
+
 ## Actuele Fase 1 code-status
 
 Aanwezig op `velcon-document-review`:
@@ -88,7 +142,7 @@ Aanwezig op `velcon-document-review`:
 - publieke replies/thread-weergave;
 - deelbare sociale profiel-URL (`view=social`);
 - profielnavigatie tussen NFT collection en Social posts;
-- publieke DeSo discovery-feed via `get-posts-stateless`;
+- publieke DeSo discovery-feed via `get-posts-stateless`, inclusief media en read-only replies;
 - geen login, signing, wallet-geheimen of write-transacties in deze read-only laag.
 
 ## Fase 2 / eerst technisch en functioneel besluiten
@@ -109,4 +163,4 @@ Aanwezig op `velcon-document-review`:
 
 ## Veiligheidsregel
 
-Nooit private keys, seeds of derived seed material in repository of platformdatabase opslaan. Een adminfunctie mag geen beveiligingsregels of gebruikersrechten omzeilen. Claims uit bronbestanden worden pas 'werkend' genoemd nadat code, build en gedrag aantoonbaar zijn gecontroleerd.
+Nooit private keys, seeds of derived seed material in repository, browseropslag of platformdatabase opslaan. Een adminfunctie mag geen beveiligingsregels of gebruikersrechten omzeilen. Claims uit bronbestanden worden pas 'werkend' genoemd nadat code, build en gedrag aantoonbaar zijn gecontroleerd.
