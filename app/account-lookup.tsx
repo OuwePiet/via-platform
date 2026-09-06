@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react"
 import { fetchDeSo } from "./deso-api"
 import PublicAccountNFTs from "./public-account-nfts"
+import PublicSocialFeed from "./public-social-feed"
 
 type DeSoProfile = {
   Username?: string
@@ -327,10 +328,15 @@ export default function AccountLookup({
               <code style={styles.code}>{profile.PublicKeyBase58Check}</code>
             </details>
             <PublicAccountNFTs
-              key={profile.PublicKeyBase58Check}
+              key={`nfts-${profile.PublicKeyBase58Check}`}
               publicKey={profile.PublicKeyBase58Check!}
               username={profile.Username!}
               autoLoad={autoLoadNFTs}
+            />
+            <PublicSocialFeed
+              key={`social-${profile.PublicKeyBase58Check}`}
+              publicKey={profile.PublicKeyBase58Check!}
+              username={profile.Username!}
             />
           </div>
         ) : null}
