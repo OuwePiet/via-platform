@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   description: "Read-only DeSo social feed on VIA.",
 }
 
-type FeedMode = "recent" | "hot" | "media"
-type PageProps = { searchParams: Promise<{ view?: string }> }
+type FeedMode = "recent" | "hot" | "media" | "following"
+type PageProps = { searchParams: Promise<{ view?: string; reader?: string }> }
 
 type FeedPost = {
   PostHashHex?: string
@@ -25,15 +25,17 @@ type FeedPost = {
   }
 }
 
-async function loadFeed(): Promise<FeedPost[]> {
+async function loadFeed(mode: FeedMode, reader?: string): Promise<FeedPost[]> {
+  const useFollowing = mode === "following" && Boolean(reader)
+
   try {
     const response = await fetchDeSo("get-posts-stateless", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        ReaderPublicKeyBase58Check: "",
+        ReaderPublicKeyBase58Check: useFollowing ? reader : "",
         NumToFetch: 40,
-        GetPostsForFollowFeed: false,
+        GetPostsForFollowFeed: useFollowing,
         GetPostsForGlobalWhitelist: false,
         GetPostsByDESO: false,
         MediaRequired: false,
@@ -70,7 +72,7 @@ function bodyText(body?: string) {
 }
 
 function normalizeMode(value?: string): FeedMode {
-  if (value === "hot" || value === "media") return value
+  if (value === "hot" || value === "media" || value === "following") return value
   return "recent"
 }
 
@@ -98,9 +100,10 @@ const styles = {
   container: { maxWidth: "760px", margin: "0 auto" },
   heading: { fontSize: "clamp(28px, 5vw, 44px)", margin: "0 0 8px" },
   intro: { color: "#a9b8af", lineHeight: 1.6, margin: "0 0 18px" },
-  modes: { display: "flex", flexWrap: "wrap" as const, gap: "10px", margin: "0 0 28px" },
+  modes: { display: "flex", flexWrap: "wrap" as const, gap: "10px", margin: "0 0 18px" },
   mode: { color: "#dce8e0", border: "1px solid #254233", borderRadius: "999px", padding: "8px 12px", textDecoration: "none", fontSize: "13px" },
   activeMode: { color: "#050807", background: "#5cff9d", border: "1px solid #5cff9d", borderRadius: "999px", padding: "8px 12px", textDecoration: "none", fontSize: "13px", fontWeight: 800 },
+  note: { color: "#a9b8af", background: "#0c120f", border: "1px solid #254233", borderRadius: "12px", padding: "12px 14px", lineHeight: 1.5, margin: "0 0 24px", fontSize: "13px" },
   list: { display: "grid", gap: "14px" },
   card: { background: "#0c120f", border: "1px solid #254233", borderRadius: "16px", padding: "18px" },
   creator: { display: "inline-block", color: "#5cff9d", fontWeight: 700, margin: "0 0 10px", textDecoration: "none" },
@@ -114,13 +117,16 @@ const styles = {
 }
 
 export default async function FeedPage({ searchParams }: PageProps) {
-  const { view } = await searchParams
+  const { view, reader } = await searchParams
   const mode = normalizeMode(view)
-  const posts = selectPosts(await loadFeed(), mode)
+  const readerKey = reader?.trim() || ""
+  const followingReady = mode === "following" && Boolean(readerKey)
+  const posts = followingReady ? await loadFeed(mode, readerKey) : selectPosts(await loadFeed(mode), mode)
   const options: { key: FeedMode; label: string }[] = [
     { key: "recent", label: "Recent" },
     { key: "hot", label: "Hot" },
     { key: "media", label: "Media" },
+    { key: "following", label: "Following" },
   ]
 
   return (
@@ -128,7 +134,7 @@ export default async function FeedPage({ searchParams }: PageProps) {
       <div style={styles.container}>
         <h1 style={styles.heading}>DeSo feed</h1>
         <p style={styles.intro}>
-          Discover public DeSo posts inside VIA. Recent keeps the node order, Hot ranks the loaded posts by visible engagement, and Media shows posts containing images or video.
+          Discover public DeSo posts inside VIA. Recent keeps the node order, Hot ranks the loaded posts by visible engagement, Media shows posts containing images or video, and Following is prepared for a signed-in reader identity.
         </p>
 
         <nav style={styles.modes} aria-label="Feed views">
@@ -139,7 +145,13 @@ export default async function FeedPage({ searchParams }: PageProps) {
           ))}
         </nav>
 
-        {posts.length === 0 ? (
+        {mode === "following" && !readerKey ? (
+          <p style={styles.note}>
+            Following is technically prepared, but VIA does not guess or store a reader key. This view will activate only when the future login layer supplies the signed-in user&apos;s public DeSo key.
+          </p>
+        ) : null}
+
+        {mode === "following" && !followingReady ? null : posts.length === 0 ? (
           <p style={styles.empty}>No posts are available in this view right now.</p>
         ) : (
           <section style={styles.list} aria-label="DeSo posts">
