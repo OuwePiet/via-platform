@@ -31,6 +31,15 @@ const styles = {
     fontSize: "14px",
     textDecoration: "none",
   },
+  login: {
+    color: "#050807",
+    background: "#5cff9d",
+    borderRadius: "999px",
+    padding: "7px 11px",
+    fontSize: "13px",
+    fontWeight: 800,
+    textDecoration: "none",
+  },
 }
 
 export default function SiteNav() {
@@ -41,6 +50,7 @@ export default function SiteNav() {
         <a href="/" style={styles.link}>NFTs</a>
         <a href="/feed" style={styles.link}>Feed</a>
         <a href="/search" style={styles.link}>Creators</a>
+        <a href="/login" style={styles.login}>Connect</a>
       </div>
     </nav>
   )
