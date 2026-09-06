@@ -23,6 +23,8 @@ const styles = {
     display: "flex",
     gap: "16px",
     alignItems: "center",
+    flexWrap: "wrap" as const,
+    justifyContent: "flex-end",
   },
   link: {
     color: "#d9e4dd",
@@ -38,6 +40,7 @@ export default function SiteNav() {
       <div style={styles.links}>
         <a href="/" style={styles.link}>NFTs</a>
         <a href="/feed" style={styles.link}>Feed</a>
+        <a href="/search" style={styles.link}>Creators</a>
       </div>
     </nav>
   )
