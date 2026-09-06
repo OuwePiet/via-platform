@@ -57,6 +57,26 @@ Niet overnemen:
 - `is_developer=true` als God-Mode/bypass;
 - claims van nul downtime of directe live synchronisatie zonder verificatie.
 
+### Google-beveiliging-site.docx
+Status: **deels direct bruikbaar, deels alleen voor Fase 2**.
+
+Bruikbaar en leidend zodra deze onderdelen bestaan:
+- geheime sleutels horen uitsluitend in beveiligde environment variables en nooit in clientcode of repository;
+- alle verbindingen moeten via HTTPS lopen;
+- als Supabase later wordt gebruikt, RLS standaard per tabel ontwerpen en testen;
+- admin-toegang moet gekoppeld zijn aan een verifieerbare identiteit/public key en niet aan alleen een eenvoudig wachtwoord.
+
+Niet letterlijk overnemen:
+- derived seeds of vergelijkbaar signing-secret in Supabase/database opslaan, ook niet wanneer AES-versleuteling wordt voorgesteld;
+- de claim dat alleen RLS plus AES-encryptie het platform direct optimaal tegen hackers beschermt;
+- aannemen dat Supabase al onderdeel is van de huidige VIA-productiebasis.
+
+Fase 2 / eerst technisch ontwerpen:
+- admin-authenticatie en autorisatie;
+- eventuele Supabase-datalaag en RLS-beleid;
+- secret/key-management voor server-side functies;
+- DeSo Identity/derived-key signing zonder opslag van seedmateriaal.
+
 ## Actuele Fase 1 code-status
 
 Aanwezig op `velcon-document-review`:
