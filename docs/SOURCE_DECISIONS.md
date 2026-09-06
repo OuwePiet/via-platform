@@ -129,7 +129,52 @@ Afwijzen of herschrijven:
 - claims van realtime synchronisatie binnen exact twee seconden zonder technische garantie;
 - automatische NFT-bid acceptatie en silent transactions voordat auth/signing veilig ontworpen zijn.
 
-De testlijsten worden later opgesplitst in: read-only Fase-1 tests, auth/signing tests, transactie/NFT tests en Fase-2 integratietests.
+De bruikbare read-only controles zijn vertaald naar `docs/PHASE_1_TEST_CHECKLIST.md`.
+
+### privechat.docx
+Status: **scope bruikbaar, write-functies Fase 2**.
+
+Bruikbaar:
+- DeSo chat en diamonds horen bij de gewenste sociale laag;
+- diamonds-telling kan read-only zichtbaar zijn;
+- portability via DeSo Associations is een nuttig later onderzoekspunt.
+
+Niet nu bouwen:
+- private messages verzenden;
+- diamonds sturen;
+- Identity-login triggeren vanuit de huidige read-only laag;
+- Supabase als source of truth voor chat/WhatsApp aannemen.
+
+### Google-aanvulling inlogmenu.docx en Google-inlogmenu-code.docx
+Status: **UX-ideeën bruikbaar, voorbeeldcode niet production-ready**.
+
+Bruikbare richting voor Fase 2:
+- eenvoudige loginervaring;
+- progressive permissions in plaats van onbeperkte rechten;
+- passkeys alleen als aanvullende, goed ontworpen authenticatielaag;
+- traditionele DeSo-login als veilige fallback zolang de auth-architectuur niet is vervangen.
+
+Afwijzen/herschrijven:
+- `transactionSpendingLimitHex: "UNLIMITED"`;
+- `derivedSeedHex` of andere private derived-key data in `sessionStorage` bewaren;
+- doen alsof een lokaal gegenereerde WebAuthn credential automatisch een DeSo-account/authsessie vormt;
+- automatische EVM/Solana-naar-DeSo wallet mapping zonder bewezen protocolroute;
+- claims als '100% veilig' of 'onmogelijk te phishen'.
+
+Voor VIA moet de authlaag later worden ontworpen rond minimale permissies, korte/duidelijke sessies en zonder opslag van seed/private key materiaal in browseropslag.
+
+### Google-inlog ouwepiet gratis.docx
+Status: **gratis ontwikkelaarstoegang als productwens mogelijk, God-Mode/bypass afgewezen**.
+
+Bruikbaar:
+- de eigenaar/ontwikkelaar kan later een expliciete test- of staff-entitlement krijgen voor betaalde VIA-features.
+
+Niet overnemen:
+- onvoorwaardelijke God Mode;
+- hardcoded whitelist bypass die normale autorisatie of betalingsregels omzeilt;
+- een databasevlag die zonder afzonderlijke server-side autorisatie premium/securityregels uitschakelt.
+
+Als gratis ontwikkelaarstoegang later nodig is, wordt dit een beperkte server-side entitlement met auditlog en zonder bypass van signing-, eigendoms- of securitycontroles.
 
 ## Actuele Fase 1 code-status
 
@@ -143,6 +188,7 @@ Aanwezig op `velcon-document-review`:
 - deelbare sociale profiel-URL (`view=social`);
 - profielnavigatie tussen NFT collection en Social posts;
 - publieke DeSo discovery-feed via `get-posts-stateless`, inclusief media en read-only replies;
+- read-only Fase-1 testchecklist;
 - geen login, signing, wallet-geheimen of write-transacties in deze read-only laag.
 
 ## Fase 2 / eerst technisch en functioneel besluiten
@@ -163,4 +209,4 @@ Aanwezig op `velcon-document-review`:
 
 ## Veiligheidsregel
 
-Nooit private keys, seeds of derived seed material in repository, browseropslag of platformdatabase opslaan. Een adminfunctie mag geen beveiligingsregels of gebruikersrechten omzeilen. Claims uit bronbestanden worden pas 'werkend' genoemd nadat code, build en gedrag aantoonbaar zijn gecontroleerd.
+Nooit private keys, seeds of derived seed material in repository, browseropslag of platformdatabase opslaan. Een admin- of developerfunctie mag geen beveiligingsregels, betalingsintegriteit, signingregels of gebruikersrechten omzeilen. Claims uit bronbestanden worden pas 'werkend' genoemd nadat code, build en gedrag aantoonbaar zijn gecontroleerd.
