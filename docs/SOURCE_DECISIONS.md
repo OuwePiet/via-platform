@@ -214,6 +214,38 @@ Niet letterlijk overnemen:
 - write-endpoints activeren zonder login/signing/permissions;
 - claims van permanente/gratis opslag of 100% beschikbaarheid zonder nuance.
 
+### Google comunicatie-blueprint.docx
+Status: **grote historische totaalblueprint; veel overlap, bruikbaar als bron maar niet als huidige architectuur**.
+
+Direct bruikbaar voor huidige VIA-richting:
+- publieke DeSo-profielen, posts, comments en NFT-data zonder verplichte login;
+- responsive ontwerp voor mobiel/tablet/laptop/desktop;
+- read-only verkenner/zoekfunctie voor creators;
+- favorieten/snelmenu als lokale browserfunctie kan later zonder server worden gebouwd;
+- handmatige refresh/retry en duidelijke foutstatus zijn nuttige UX-principes;
+- in-app-browser waarschuwing kan later nuttig zijn zodra login/betaling wordt toegevoegd.
+
+Fase 2 / eerst ontwerpen:
+- DeSo Identity en derived permissions;
+- likes/comments/diamonds/minting en alle andere write-acties;
+- premium video, Stripe/iDEAL/crypto, activatiecodes en Cloudflare/Gumroad;
+- veilingen, bulk minting en admin/clubvinkjes;
+- actuele DESO-koersweergave en betalingsvalidatie;
+- favorites/bookmarks als productfunctie;
+- verified-status/badges na verificatie van actuele DeSo-data en betekenis.
+
+Niet letterlijk overnemen:
+- Framer/Webflow/Wix als frontend; VIA gebruikt Next.js;
+- derived/private keys in database of browseropslag bewaren;
+- automatische on-chain signing namens gebruikers zonder veilig permissionsmodel;
+- transacties of premium content vrijgeven op alleen een onbevestigd mempool-signaal;
+- aannemen dat `make-nft-bid` automatisch escrow/reservering van saldo garandeert zonder actuele protocolverificatie;
+- willekeurige vaste limieten, tarieven, royalties of bouwtijden als bewezen feiten;
+- claims dat lokaal opslaan van favorieten automatisch volledige privacywetgeving afdekt;
+- oude Lumen/VERO/no-code branding en technische stack.
+
+Conclusie: deze 17-pagina blueprint bevestigt vooral de gewenste combinatie van **DeSo social + NFT + eenvoudige ontdekking + later commerce**, maar de huidige VIA-code blijft leidend en de zware write/payment/admin-delen blijven Fase 2.
+
 ### Google-beveiliging-18+-en verboden middelen..docx
 Status: **beleidsrichting relevant, voorgestelde techniek onvoldoende als juridische leeftijdsverificatie**.
 
