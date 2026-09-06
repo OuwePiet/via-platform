@@ -231,6 +231,75 @@ Niet overnemen:
 
 Voor een echte 18+/compliancefunctie is later een afzonderlijk juridisch/productbesluit nodig per markt en type content.
 
+### Google lancering.docx
+Status: **bruikbare groeibron, geen directe technische Fase-1 opdracht**.
+
+Bruikbaar:
+- creator-onboarding voorbereiden nadat de kern aantoonbaar stabiel is;
+- deelbare VIA-links en organische verspreiding via bestaande sociale netwerken ondersteunen;
+- een toekomstige claim-/onboardingpagina kan nuttig zijn;
+- whitelabel/embed-mogelijkheden kunnen later worden onderzocht.
+
+Eerst bespreken/verifiëren:
+- vooraf reputatievinkjes reserveren voor creators;
+- externe creators vooraf inladen en claimbaar maken;
+- WhatsApp als primaire commerciële funnel;
+- automatische NFT-koop/mintflows vanuit externe widgets;
+- marketingclaims zoals €0 platformkosten of volledig eigendom alleen publiceren als ze technisch/juridisch kloppen.
+
+De oude Lumen-lanceringscopy wordt niet als VIA-productbelofte overgenomen.
+
+### Google toekomst 2027-.docx
+Status: **duidelijk lange-termijn/Fase 2+ materiaal**.
+
+Parkeren voor later overleg:
+- UPI/Alipay/WeChat Pay;
+- China/India-specifieke marktuitrol en lokale compliance;
+- AI-covergeneratoren voor uploads;
+- cross-chain/L2 bridging;
+- regio-badges en externe social-verificatie.
+
+Bruikbare algemene richting:
+- mobiel en datazuinig blijven;
+- internationalisatie modulair ontwerpen;
+- externe betaal- en cross-chain koppelingen nooit als kernvereiste van Fase 1 behandelen.
+
+### Google-code-aanvulling-mirror.docx en Google-aanvulling na publicatie-mirror.docx
+Status: **strategische inspiratie, niet rechtstreeks uitvoerbare VIA-code**.
+
+Eerst verifiëren/besluiten:
+- buy & burn als platformmechanisme;
+- percentage van inkomsten voor token-/DESO-buyback;
+- welke asset eventueel wordt gekocht/verbrand;
+- juridische, fiscale en operationele gevolgen;
+- custody/signing en treasury-beheer;
+- cross-chain wallet-login of Mirror-achtige handel.
+
+Niet overnemen:
+- fictieve wisselkoersen;
+- placeholder burn-adressen;
+- platform seed phrase gebruiken als automatische centrale signer;
+- aannemen dat Mirror-functionaliteit automatisch bewijst dat dezelfde route veilig/geschikt is voor VIA;
+- de claim dat één publicatie automatisch juridische of technische validatie geeft.
+
+Buy & Burn blijft expliciet buiten de huidige read-only Fase 1.
+
+### Google-miccadekking-juridische zaken.docx
+Status: **risicosignalen waardevol, juridische conclusies niet als vaststaand behandelen**.
+
+Bruikbaar:
+- custody, swaps, cross-chain betalingen, buy/burn en betaalstromen moeten vóór implementatie juridisch worden getoetst;
+- sessies/derived permissions moeten beperkt en intrekbaar zijn;
+- externe URL's zoals WhatsApp-links moeten strikt worden gevalideerd voordat ze renderbaar/klikbaar zijn.
+
+Niet overnemen:
+- de conclusie dat VIA automatisch onder MiCA/CASP valt zonder analyse van concrete functies en rechtsgebied;
+- de claim dat externe widgets juridische verantwoordelijkheid 100% verplaatsen;
+- de claim dat disclaimers het platform juridisch 100% veilig maken;
+- het voorbeeldconstraint dat willekeurige `https://%://%`-achtige patronen zou toestaan.
+
+Juridische/compliancekeuzes blijven Fase 2 en moeten functie-voor-functie worden beoordeeld.
+
 ## Actuele Fase 1 code-status
 
 Aanwezig op `velcon-document-review`:
@@ -262,7 +331,10 @@ Aanwezig op `velcon-document-review`:
 - multi-node failover;
 - Passkeys/OTP;
 - cross-chain;
-- 18+/content moderation/compliance per markt.
+- 18+/content moderation/compliance per markt;
+- internationale betaalmethoden/lokalisatie;
+- buy & burn/treasury-mechanismen;
+- creator-claim/whitelabel/embed-strategie.
 
 ## Veiligheidsregel
 
