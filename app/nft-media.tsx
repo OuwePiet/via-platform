@@ -26,7 +26,7 @@ const mediaBadgeStyle: CSSProperties = {
   position: "absolute",
   top: "12px",
   left: "12px",
-  zIndex: 1,
+  zIndex: 2,
   color: "#5cff9d",
   background: "rgba(5, 8, 7, 0.88)",
   border: "1px solid #285f40",
@@ -38,8 +38,31 @@ const mediaBadgeStyle: CSSProperties = {
   pointerEvents: "none",
 }
 
+const viaWatermarkStyle: CSSProperties = {
+  position: "absolute",
+  right: "10px",
+  bottom: "8px",
+  zIndex: 2,
+  color: "rgba(244, 247, 245, 0.42)",
+  fontSize: "clamp(11px, 2.2vw, 17px)",
+  fontWeight: 500,
+  letterSpacing: "0.22em",
+  lineHeight: 1,
+  pointerEvents: "none",
+  userSelect: "none",
+  textShadow: "0 1px 5px rgba(0, 0, 0, 0.45)",
+}
+
 function MediaBadge({ label }: { label: string }) {
   return <span style={mediaBadgeStyle}>{label}</span>
+}
+
+function ViaWatermark() {
+  return (
+    <span aria-hidden="true" style={viaWatermarkStyle}>
+      VIA
+    </span>
+  )
 }
 
 function filePath(url: string) {
@@ -127,6 +150,7 @@ export default function NFTMedia({
     return (
       <div style={mediaWrapperStyle}>
         <MediaBadge label="Video" />
+        <ViaWatermark />
         <video
           key={currentUrl}
           src={currentUrl}
@@ -161,6 +185,7 @@ export default function NFTMedia({
   return (
     <div style={mediaWrapperStyle}>
       <MediaBadge label="Image" />
+      <ViaWatermark />
       <Image
         key={currentUrl}
         src={currentUrl}
