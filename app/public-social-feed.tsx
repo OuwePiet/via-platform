@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react"
 import { fetchDeSo } from "./deso-api"
 import NFTMedia from "./nft-media"
+import PublicPostThread from "./public-post-thread"
 
 const PAGE_SIZE = 25
 
@@ -241,6 +242,7 @@ export default function PublicSocialFeed({
           const imageUrl = post.ImageURLs?.[0]
           const videoUrl = post.VideoURLs?.[0]
           const hasMedia = Boolean(imageUrl || videoUrl)
+          const replyCount = safeCount(post.CommentCount)
 
           return (
             <article key={post.PostHashHex ?? `${index}-${body}`} style={styles.post}>
@@ -248,7 +250,7 @@ export default function PublicSocialFeed({
                 <p style={styles.author}>@{author}{date ? ` · ${date}` : ""}</p>
                 <p style={styles.body}>{body}</p>
                 <div style={styles.meta} aria-label="Public post activity">
-                  <span>Replies {safeCount(post.CommentCount)}</span>
+                  <span>Replies {replyCount}</span>
                   <span>Likes {safeCount(post.LikeCount)}</span>
                   <span>Reposts {safeCount(post.RepostCount)}</span>
                   <span>Quotes {safeCount(post.QuoteRepostCount)}</span>
@@ -257,6 +259,13 @@ export default function PublicSocialFeed({
                   {post.VideoURLs?.length ? <span>Video</span> : null}
                   {post.IsNFT ? <span>NFT</span> : null}
                 </div>
+
+                {replyCount > 0 && post.PostHashHex ? (
+                  <PublicPostThread
+                    postHash={post.PostHashHex}
+                    replyCount={replyCount}
+                  />
+                ) : null}
               </div>
 
               {hasMedia ? (
