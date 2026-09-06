@@ -176,6 +176,61 @@ Niet overnemen:
 
 Als gratis ontwikkelaarstoegang later nodig is, wordt dit een beperkte server-side entitlement met auditlog en zonder bypass van signing-, eigendoms- of securitycontroles.
 
+### Google-diamantendouche.docx
+Status: **UX-idee bruikbaar, transactiecode Fase 2**.
+
+Bruikbaar:
+- een compacte diamond-level selector past bij de gewenste DeSo-sociallaag;
+- publieke DiamondCount blijft read-only zichtbaar in Fase 1;
+- daadwerkelijke diamond-level waarden en kosten moeten op het moment van implementatie uit actuele DeSo-specificaties komen.
+
+Niet overnemen:
+- private/derived key materiaal uit `sessionStorage` lezen;
+- transacties direct uitvoeren zonder afzonderlijk auth/signingmodel;
+- hardcoded receiver/public-key placeholders of verouderde endpointpaden;
+- vaste euro-waardes per diamond-level als protocolgarantie behandelen.
+
+### Google-communicatiepaneel-blockthain.docx
+Status: **sterke UX-bron, opsplitsen in read-only nu en signed acties later**.
+
+Nu bruikbaar:
+- responsive social/content-paneel;
+- Home/Feed, Explore, profielzoeking en publieke counters;
+- publieke posts, replies, NFT-media, likes/reposts/diamonds als read-only informatie;
+- discovery-auteurs intern laten doorlinken naar hun VIA-profiel/social-feed.
+
+Fase 2:
+- on-chain private chat;
+- like/repost/follow/diamond schrijven;
+- composer/comments schrijven;
+- notifications;
+- WhatsApp creator-links;
+- bookmarks/snelmenu en eventuele Associations;
+- creator/admin-acties en veilingen.
+
+Niet letterlijk overnemen:
+- claims dat chat volledig anoniem is;
+- Supabase/WhatsApp als bestaande VIA-basis aannemen;
+- write-endpoints activeren zonder login/signing/permissions;
+- claims van permanente/gratis opslag of 100% beschikbaarheid zonder nuance.
+
+### Google-beveiliging-18+-en verboden middelen..docx
+Status: **beleidsrichting relevant, voorgestelde techniek onvoldoende als juridische leeftijdsverificatie**.
+
+Bruikbaar:
+- VIA moet eigen rendering/moderatiebeleid kunnen toepassen op publiek on-chain materiaal;
+- post-hash/public-key blocklists kunnen later onderdeel zijn van een beheerde moderatielaag;
+- gevoelige content kan in de interface worden verborgen of met een waarschuwing worden afgeschermd;
+- moderatie- en compliancebesluiten horen traceerbaar/auditbaar te zijn.
+
+Niet overnemen:
+- FaceID/TouchID of een passkey behandelen als bewijs dat iemand 18+ is;
+- alleen een client-side/sessionStorage-vlag gebruiken als serieuze leeftijdsverificatie;
+- een publieke frontend-blocklist voorstellen als enige beschermingslaag;
+- claims dat deze aanpak het platform juridisch 'waterdicht' of volledig beschermd maakt.
+
+Voor een echte 18+/compliancefunctie is later een afzonderlijk juridisch/productbesluit nodig per markt en type content.
+
 ## Actuele Fase 1 code-status
 
 Aanwezig op `velcon-document-review`:
@@ -188,6 +243,7 @@ Aanwezig op `velcon-document-review`:
 - deelbare sociale profiel-URL (`view=social`);
 - profielnavigatie tussen NFT collection en Social posts;
 - publieke DeSo discovery-feed via `get-posts-stateless`, inclusief media en read-only replies;
+- discovery-auteurs linken intern door naar het VIA-socialprofiel wanneer DeSo de benodigde public key meestuurt;
 - read-only Fase-1 testchecklist;
 - geen login, signing, wallet-geheimen of write-transacties in deze read-only laag.
 
@@ -205,7 +261,8 @@ Aanwezig op `velcon-document-review`:
 - WhatsApp commerce;
 - multi-node failover;
 - Passkeys/OTP;
-- cross-chain.
+- cross-chain;
+- 18+/content moderation/compliance per markt.
 
 ## Veiligheidsregel
 
