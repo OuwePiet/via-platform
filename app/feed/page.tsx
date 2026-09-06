@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
+import { cookies } from "next/headers"
 import { fetchDeSo } from "../deso-api"
+import { decodePublicSession, SESSION_COOKIE } from "../session"
 
 export const dynamic = "force-dynamic"
 
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
 }
 
 type FeedMode = "recent" | "hot" | "media" | "following"
-type PageProps = { searchParams: Promise<{ view?: string; reader?: string }> }
+type PageProps = { searchParams: Promise<{ view?: string }> }
 
 type FeedPost = {
   PostHashHex?: string
@@ -20,14 +22,11 @@ type FeedPost = {
   CommentCount?: number
   RepostCount?: number
   DiamondCount?: number
-  ProfileEntryResponse?: {
-    Username?: string
-  }
+  ProfileEntryResponse?: { Username?: string }
 }
 
 async function loadFeed(mode: FeedMode, reader?: string): Promise<FeedPost[]> {
   const useFollowing = mode === "following" && Boolean(reader)
-
   try {
     const response = await fetchDeSo("get-posts-stateless", {
       method: "POST",
@@ -42,9 +41,7 @@ async function loadFeed(mode: FeedMode, reader?: string): Promise<FeedPost[]> {
       }),
       cache: "no-store",
     })
-
     if (!response.ok) return []
-
     const data = await response.json()
     return data.PostsFound ?? data.Posts ?? []
   } catch {
@@ -56,42 +53,27 @@ function username(post: FeedPost) {
   const name = post.ProfileEntryResponse?.Username
   return name ? `@${name}` : "DeSo user"
 }
-
 function profileHref(post: FeedPost) {
   const name = post.ProfileEntryResponse?.Username
   return name ? `/profile/${encodeURIComponent(name)}` : "/feed"
 }
-
 function postHref(post: FeedPost) {
   return post.PostHashHex ? `/post/${post.PostHashHex}` : "/feed"
 }
-
 function bodyText(body?: string) {
   if (!body) return "Post without text"
   return body.length > 420 ? `${body.slice(0, 417)}...` : body
 }
-
 function normalizeMode(value?: string): FeedMode {
   if (value === "hot" || value === "media" || value === "following") return value
   return "recent"
 }
-
 function engagementScore(post: FeedPost) {
-  return (
-    (post.DiamondCount ?? 0) * 4 +
-    (post.RepostCount ?? 0) * 3 +
-    (post.CommentCount ?? 0) * 2 +
-    (post.LikeCount ?? 0)
-  )
+  return (post.DiamondCount ?? 0) * 4 + (post.RepostCount ?? 0) * 3 + (post.CommentCount ?? 0) * 2 + (post.LikeCount ?? 0)
 }
-
 function selectPosts(posts: FeedPost[], mode: FeedMode) {
-  if (mode === "media") {
-    return posts.filter((post) => (post.ImageURLs?.length ?? 0) + (post.VideoURLs?.length ?? 0) > 0)
-  }
-  if (mode === "hot") {
-    return [...posts].sort((a, b) => engagementScore(b) - engagementScore(a))
-  }
+  if (mode === "media") return posts.filter((post) => (post.ImageURLs?.length ?? 0) + (post.VideoURLs?.length ?? 0) > 0)
+  if (mode === "hot") return [...posts].sort((a, b) => engagementScore(b) - engagementScore(a))
   return posts
 }
 
@@ -117,11 +99,15 @@ const styles = {
 }
 
 export default async function FeedPage({ searchParams }: PageProps) {
-  const { view, reader } = await searchParams
+  const { view } = await searchParams
   const mode = normalizeMode(view)
-  const readerKey = reader?.trim() || ""
-  const followingReady = mode === "following" && Boolean(readerKey)
-  const posts = followingReady ? await loadFeed(mode, readerKey) : selectPosts(await loadFeed(mode), mode)
+  const cookieStore = await cookies()
+  const session = decodePublicSession(cookieStore.get(SESSION_COOKIE)?.value)
+  const followingReady = mode === "following" && Boolean(session?.publicKeyBase58Check)
+  const posts = followingReady
+    ? await loadFeed(mode, session?.publicKeyBase58Check)
+    : selectPosts(await loadFeed(mode), mode)
+
   const options: { key: FeedMode; label: string }[] = [
     { key: "recent", label: "Recent" },
     { key: "hot", label: "Hot" },
@@ -134,7 +120,7 @@ export default async function FeedPage({ searchParams }: PageProps) {
       <div style={styles.container}>
         <h1 style={styles.heading}>DeSo feed</h1>
         <p style={styles.intro}>
-          Discover public DeSo posts inside VIA. Recent keeps the node order, Hot ranks the loaded posts by visible engagement, Media shows posts containing images or video, and Following is prepared for a signed-in reader identity.
+          Discover public DeSo posts inside VIA. Recent keeps the node order, Hot ranks loaded posts by visible engagement, Media shows posts with media, and Following uses your connected public DeSo profile.
         </p>
 
         <nav style={styles.modes} aria-label="Feed views">
@@ -145,10 +131,14 @@ export default async function FeedPage({ searchParams }: PageProps) {
           ))}
         </nav>
 
-        {mode === "following" && !readerKey ? (
+        {mode === "following" && !session ? (
           <p style={styles.note}>
-            Following is technically prepared, but VIA does not guess or store a reader key. This view will activate only when the future login layer supplies the signed-in user&apos;s public DeSo key.
+            Following needs a connected public DeSo profile. <a href="/login" style={{ color: "#5cff9d" }}>Connect profile →</a>
           </p>
+        ) : null}
+
+        {mode === "following" && session ? (
+          <p style={styles.note}>Following for @{session.username}. VIA uses only the verified public DeSo key in this read-only session.</p>
         ) : null}
 
         {mode === "following" && !followingReady ? null : posts.length === 0 ? (
