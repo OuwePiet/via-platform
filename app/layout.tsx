@@ -1,22 +1,23 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './global.css'
+import SiteNav from './site-nav'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://viadeso.online'),
   title: {
-    default: 'VIA — DeSo NFT platform',
+    default: 'VIA — DeSo social & NFT platform',
     template: '%s | VIA',
   },
   description:
-    'Explore DeSo NFT collections through VIA, directly from the DeSo blockchain.',
+    'Explore DeSo social activity, creators and NFT collections through VIA, directly from the DeSo blockchain.',
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'VIA — DeSo NFT platform',
+    title: 'VIA — DeSo social & NFT platform',
     description:
-      'Explore DeSo NFT collections through VIA, directly from the DeSo blockchain.',
+      'Explore DeSo social activity, creators and NFT collections through VIA, directly from the DeSo blockchain.',
     url: '/',
     siteName: 'VIA',
     type: 'website',
@@ -42,6 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <SiteNav />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
