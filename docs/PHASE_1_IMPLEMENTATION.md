@@ -13,6 +13,7 @@ Fase 1 brengt de bestaande VIA-basis technisch en administratief op één lijn, 
    - Publieke naam: `VIA`
    - Hoofddomein: `https://viadeso.online`
    - Historische namen VERO/Lumen alleen als bronverwijzing behouden.
+   - Centrale configuratie: `app/site-config.ts`.
 
 2. **Bestaande Next.js-basis behouden**
    - Geen terugbouw naar Vite/Framer/Webflow uit oudere documenten.
@@ -27,7 +28,14 @@ Fase 1 brengt de bestaande VIA-basis technisch en administratief op één lijn, 
    - Geen seeds, private keys of wallet-geheimen in code of documentatie.
    - Bestaande payment-routing documentatie/code blijft leidend totdat een afzonderlijke betaalmodule gecontroleerd is.
 
-5. **Documenten classificeren vóór implementatie**
+5. **Basisbeveiliging van de publieke app**
+   - `X-Content-Type-Options: nosniff`.
+   - `X-Frame-Options: DENY`.
+   - `Referrer-Policy: strict-origin-when-cross-origin`.
+   - Camera, microfoon en geolocatie standaard uit via `Permissions-Policy` zolang Fase 1 deze functies niet gebruikt.
+   - Geen strenge Content-Security-Policy toevoegen voordat alle DeSo/API/media-bronnen gecontroleerd zijn.
+
+6. **Documenten classificeren vóór implementatie**
    Elke bron krijgt één van deze statussen:
    - al aanwezig;
    - bruikbaar en nu in Fase 1;
