@@ -52,9 +52,13 @@ function username(post: FeedPost) {
   return name ? `@${name}` : "DeSo user"
 }
 
-function accountHref(post: FeedPost) {
+function profileHref(post: FeedPost) {
   const name = post.ProfileEntryResponse?.Username
-  return name ? `/?account=${encodeURIComponent(name)}` : "/"
+  return name ? `/profile/${encodeURIComponent(name)}` : "/feed"
+}
+
+function postHref(post: FeedPost) {
+  return post.PostHashHex ? `/post/${post.PostHashHex}` : "/feed"
 }
 
 function bodyText(body?: string) {
@@ -100,6 +104,10 @@ const styles = {
     margin: "0 0 10px",
     textDecoration: "none",
   },
+  bodyLink: {
+    color: "inherit",
+    textDecoration: "none",
+  },
   body: {
     whiteSpace: "pre-wrap" as const,
     lineHeight: 1.55,
@@ -124,6 +132,13 @@ const styles = {
     fontSize: "13px",
     lineHeight: 1.5,
   },
+  detailLink: {
+    display: "inline-block",
+    marginTop: "12px",
+    color: "#5cff9d",
+    fontSize: "13px",
+    textDecoration: "none",
+  },
   empty: {
     color: "#a9b8af",
     padding: "24px 0",
@@ -138,9 +153,9 @@ export default async function FeedPage() {
       <div style={styles.container}>
         <h1 style={styles.heading}>DeSo feed</h1>
         <p style={styles.intro}>
-          Public posts loaded read-only from DeSo. Open a creator to view that
-          account&apos;s NFT collection on VIA. Posting, liking, reposting and
-          diamonds remain disabled in this step.
+          Public posts loaded read-only from DeSo. Open creators, posts and replies
+          inside VIA. Posting, liking, reposting and diamonds remain disabled in
+          this step.
         </p>
 
         {posts.length === 0 ? (
@@ -149,11 +164,13 @@ export default async function FeedPage() {
           <section style={styles.list} aria-label="DeSo posts">
             {posts.map((post, index) => (
               <article key={post.PostHashHex ?? index} style={styles.card}>
-                <a href={accountHref(post)} style={styles.creator}>
+                <a href={profileHref(post)} style={styles.creator}>
                   {username(post)}
                 </a>
 
-                <p style={styles.body}>{bodyText(post.Body)}</p>
+                <a href={postHref(post)} style={styles.bodyLink}>
+                  <p style={styles.body}>{bodyText(post.Body)}</p>
+                </a>
 
                 {(post.ImageURLs?.length || post.VideoURLs?.length) ? (
                   <div style={styles.mediaList}>
@@ -181,6 +198,7 @@ export default async function FeedPage() {
                 <div style={styles.stats}>
                   {post.LikeCount ?? 0} likes · {post.CommentCount ?? 0} replies · {post.RepostCount ?? 0} reposts · {post.DiamondCount ?? 0} diamonds
                 </div>
+                {post.PostHashHex ? <a href={postHref(post)} style={styles.detailLink}>Open post & replies →</a> : null}
               </article>
             ))}
           </section>
