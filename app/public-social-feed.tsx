@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { fetchDeSo } from "./deso-api"
 import NFTMedia from "./nft-media"
 import PublicPostThread from "./public-post-thread"
@@ -36,6 +36,12 @@ const styles = {
     marginLeft: "8px",
     marginTop: "12px",
     padding: "9px 14px",
+  },
+  actions: {
+    display: "flex",
+    flexWrap: "wrap" as const,
+    gap: "8px",
+    marginTop: "12px",
   },
   status: {
     color: "#a9b8af",
@@ -137,15 +143,18 @@ function uniquePosts(posts: DeSoPost[]) {
 export default function PublicSocialFeed({
   publicKey,
   username,
+  autoLoad = false,
 }: {
   publicKey: string
   username: string
+  autoLoad?: boolean
 }) {
   const [posts, setPosts] = useState<DeSoPost[] | null>(null)
   const [loading, setLoading] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState("")
+  const [shareStatus, setShareStatus] = useState("")
 
   const fetchPage = useCallback(async (lastPostHashHex = "") => {
     const response = await fetchDeSo("get-posts-for-public-key", {
@@ -160,9 +169,7 @@ export default function PublicSocialFeed({
       }),
     })
 
-    if (!response.ok) {
-      throw new Error("DeSo social feed request failed")
-    }
+    if (!response.ok) throw new Error("DeSo social feed request failed")
 
     const data = await response.json()
     const retrieved: DeSoPost[] = Array.isArray(data.Posts)
@@ -175,6 +182,7 @@ export default function PublicSocialFeed({
   }, [publicKey])
 
   const loadPosts = useCallback(async () => {
+    if (loading) return
     setLoading(true)
     setError("")
 
@@ -187,11 +195,14 @@ export default function PublicSocialFeed({
     } finally {
       setLoading(false)
     }
-  }, [fetchPage])
+  }, [fetchPage, loading])
+
+  useEffect(() => {
+    if (autoLoad && posts === null && !loading) void loadPosts()
+  }, [autoLoad, loadPosts, loading, posts])
 
   const loadMore = useCallback(async () => {
     if (!posts?.length || loadingMore || !hasMore) return
-
     const lastPostHashHex = posts[posts.length - 1]?.PostHashHex
     if (!lastPostHashHex) {
       setHasMore(false)
@@ -200,7 +211,6 @@ export default function PublicSocialFeed({
 
     setLoadingMore(true)
     setError("")
-
     try {
       const retrieved = await fetchPage(lastPostHashHex)
       const combined = uniquePosts([...posts, ...retrieved])
@@ -213,15 +223,22 @@ export default function PublicSocialFeed({
     }
   }, [fetchPage, hasMore, loadingMore, posts])
 
+  const copySocialLink = useCallback(async () => {
+    if (typeof window === "undefined") return
+    const params = new URLSearchParams({ account: username, accountKey: publicKey, view: "social" })
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}#account-lookup-heading`
+    try {
+      await navigator.clipboard.writeText(url)
+      setShareStatus("Social link copied")
+    } catch {
+      setShareStatus("Could not copy link")
+    }
+  }, [publicKey, username])
+
   if (posts === null) {
     return (
       <>
-        <button
-          type="button"
-          style={styles.action}
-          disabled={loading}
-          onClick={loadPosts}
-        >
+        <button type="button" style={styles.action} disabled={loading} onClick={loadPosts}>
           {loading ? "Loading social posts…" : "View public social posts"}
         </button>
         {error ? <div style={styles.error}>{error}</div> : null}
@@ -231,9 +248,12 @@ export default function PublicSocialFeed({
 
   return (
     <section aria-label={`Public DeSo posts by @${username}`}>
-      <p style={styles.status}>
-        Read-only social feed · {posts.length} recent posts loaded from DeSo
-      </p>
+      <p style={styles.status}>Read-only social feed · {posts.length} recent posts loaded from DeSo</p>
+      <div style={styles.actions}>
+        <button type="button" style={{ ...styles.action, marginLeft: 0, marginTop: 0 }} onClick={copySocialLink}>Copy social link</button>
+        {shareStatus ? <span style={styles.status} role="status">{shareStatus}</span> : null}
+      </div>
+      {posts.length === 0 ? <p style={styles.status}>No recent public posts found.</p> : null}
       <div style={styles.feed}>
         {posts.map((post, index) => {
           const date = formatDate(post.TimestampNanos)
@@ -259,44 +279,24 @@ export default function PublicSocialFeed({
                   {post.VideoURLs?.length ? <span>Video</span> : null}
                   {post.IsNFT ? <span>NFT</span> : null}
                 </div>
-
-                {replyCount > 0 && post.PostHashHex ? (
-                  <PublicPostThread
-                    postHash={post.PostHashHex}
-                    replyCount={replyCount}
-                  />
-                ) : null}
+                {replyCount > 0 && post.PostHashHex ? <PublicPostThread postHash={post.PostHashHex} replyCount={replyCount} /> : null}
               </div>
-
               {hasMedia ? (
                 <div style={styles.media}>
-                  <NFTMedia
-                    imageUrl={imageUrl}
-                    videoUrl={videoUrl}
-                    alt={`Public DeSo post by @${author}`}
-                    imageStyle={styles.mediaImage}
-                    placeholderStyle={styles.mediaPlaceholder}
-                  />
+                  <NFTMedia imageUrl={imageUrl} videoUrl={videoUrl} alt={`Public DeSo post by @${author}`} imageStyle={styles.mediaImage} placeholderStyle={styles.mediaPlaceholder} />
                 </div>
               ) : null}
             </article>
           )
         })}
       </div>
-
-      {hasMore ? (
-        <button
-          type="button"
-          style={styles.action}
-          disabled={loadingMore}
-          onClick={loadMore}
-        >
+      {posts.length > 0 && hasMore ? (
+        <button type="button" style={styles.action} disabled={loadingMore} onClick={loadMore}>
           {loadingMore ? "Loading more…" : "Load more social posts"}
         </button>
-      ) : (
+      ) : posts.length > 0 ? (
         <p style={styles.status}>No more recent posts available.</p>
-      )}
-
+      ) : null}
       {error ? <div style={styles.error}>{error}</div> : null}
     </section>
   )
