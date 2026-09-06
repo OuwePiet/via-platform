@@ -98,6 +98,16 @@ function formatDate(timestampNanos?: number) {
   }).format(date)
 }
 
+function uniquePosts(posts: DeSoPost[]) {
+  const seen = new Set<string>()
+  return posts.filter((post, index) => {
+    const key = post.PostHashHex ?? `index-${index}-${post.TimestampNanos ?? ""}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
 export default function PublicSocialFeed({
   publicKey,
   username,
@@ -107,44 +117,75 @@ export default function PublicSocialFeed({
 }) {
   const [posts, setPosts] = useState<DeSoPost[] | null>(null)
   const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
   const [error, setError] = useState("")
+
+  const fetchPage = useCallback(async (lastPostHashHex = "") => {
+    const response = await fetchDeSo("get-posts-for-public-key", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        PublicKeyBase58Check: publicKey,
+        ReaderPublicKeyBase58Check: "",
+        LastPostHashHex: lastPostHashHex,
+        NumToFetch: PAGE_SIZE,
+        MediaRequired: false,
+      }),
+    })
+
+    if (!response.ok) {
+      throw new Error("DeSo social feed request failed")
+    }
+
+    const data = await response.json()
+    const retrieved: DeSoPost[] = Array.isArray(data.Posts)
+      ? data.Posts
+      : Array.isArray(data.PostsFound)
+        ? data.PostsFound
+        : []
+
+    return retrieved
+  }, [publicKey])
 
   const loadPosts = useCallback(async () => {
     setLoading(true)
     setError("")
 
     try {
-      const response = await fetchDeSo("get-posts-for-public-key", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          PublicKeyBase58Check: publicKey,
-          ReaderPublicKeyBase58Check: "",
-          LastPostHashHex: "",
-          NumToFetch: PAGE_SIZE,
-          MediaRequired: false,
-        }),
-      })
-
-      if (!response.ok) {
-        setError("The public DeSo posts could not be retrieved right now.")
-        return
-      }
-
-      const data = await response.json()
-      const retrieved: DeSoPost[] = Array.isArray(data.Posts)
-        ? data.Posts
-        : Array.isArray(data.PostsFound)
-          ? data.PostsFound
-          : []
-
-      setPosts(retrieved)
+      const retrieved = await fetchPage()
+      setPosts(uniquePosts(retrieved))
+      setHasMore(retrieved.length === PAGE_SIZE)
     } catch {
       setError("The public DeSo posts could not be retrieved right now.")
     } finally {
       setLoading(false)
     }
-  }, [publicKey])
+  }, [fetchPage])
+
+  const loadMore = useCallback(async () => {
+    if (!posts?.length || loadingMore || !hasMore) return
+
+    const lastPostHashHex = posts[posts.length - 1]?.PostHashHex
+    if (!lastPostHashHex) {
+      setHasMore(false)
+      return
+    }
+
+    setLoadingMore(true)
+    setError("")
+
+    try {
+      const retrieved = await fetchPage(lastPostHashHex)
+      const combined = uniquePosts([...posts, ...retrieved])
+      setPosts(combined)
+      setHasMore(retrieved.length === PAGE_SIZE && combined.length > posts.length)
+    } catch {
+      setError("More public DeSo posts could not be retrieved right now.")
+    } finally {
+      setLoadingMore(false)
+    }
+  }, [fetchPage, hasMore, loadingMore, posts])
 
   if (posts === null) {
     return (
@@ -191,6 +232,21 @@ export default function PublicSocialFeed({
           )
         })}
       </div>
+
+      {hasMore ? (
+        <button
+          type="button"
+          style={styles.action}
+          disabled={loadingMore}
+          onClick={loadMore}
+        >
+          {loadingMore ? "Loading more…" : "Load more social posts"}
+        </button>
+      ) : (
+        <p style={styles.status}>No more recent posts available.</p>
+      )}
+
+      {error ? <div style={styles.error}>{error}</div> : null}
     </section>
   )
 }
