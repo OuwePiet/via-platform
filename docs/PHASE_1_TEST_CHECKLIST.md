@@ -6,9 +6,10 @@ Deze checklist vertaalt de bruikbare delen van historische testdocumenten naar d
 
 - [ ] `npm run typecheck` slaagt.
 - [ ] `npm run build` slaagt.
-- [ ] Vercel preview voor de actuele branch is groen.
+- [x] Vercel preview voor de actuele branch is groen.
 - [ ] Geen nieuwe browser-consolefouten op de startpagina.
 - [ ] Ontbrekende of kapotte media veroorzaken geen pagina-crash.
+- [x] PR #6 is technisch mergeable volgens de actuele GitHub PR-check; `main` blijft nog ongewijzigd tot de overige controles klaar zijn.
 
 ## Responsive basis
 
@@ -16,6 +17,7 @@ Deze checklist vertaalt de bruikbare delen van historische testdocumenten naar d
 - [ ] Startpagina bruikbaar op iPad/tablet.
 - [ ] Startpagina bruikbaar op iPhone/mobiel.
 - [ ] Accountzoeker, NFT/social-tabs en feedknoppen blijven bereikbaar zonder horizontaal vastlopen.
+- [ ] Het VIA-woordmerk blijft visueel leidend; oude Lumen/VERO-merken verschijnen niet als actuele branding.
 
 ## Publieke DeSo accounts
 
@@ -33,6 +35,9 @@ Deze checklist vertaalt de bruikbare delen van historische testdocumenten naar d
 - [ ] Grote collectie kan geladen worden zonder dubbele items.
 - [ ] Gedeelde NFT/account-links herstellen de bedoelde publieke weergave.
 - [ ] NFT-detailpagina en terugnavigatie blijven werken.
+- [ ] Afbeeldingen en video's krijgen alleen tijdens VIA-weergave een klein, subtiel VIA-watermerk rechtsonder.
+- [ ] Het VIA-watermerk wijzigt het bronbestand, de on-chain metadata of de externe media-URL niet.
+- [ ] Het watermerk blokkeert geen media-controls en blijft ondergeschikt aan de kunst/NFT zelf.
 
 ## Publieke sociale feed
 
@@ -58,6 +63,7 @@ Deze checklist vertaalt de bruikbare delen van historische testdocumenten naar d
 - [ ] `Referrer-Policy: strict-origin-when-cross-origin` aanwezig.
 - [ ] Camera, microfoon en geolocatie blijven uit zolang Fase 1 ze niet gebruikt.
 - [ ] Geen private keys, seeds of derived private-key materiaal in repository, browseropslag of databasecode.
+- [ ] Geen claims als `100% veilig`, `onverwoestbaar`, `hackfree` of `altijd online` in de actuele product-UI zonder aantoonbare technische basis.
 
 ## Buiten Fase 1
 
