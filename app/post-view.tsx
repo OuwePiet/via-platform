@@ -30,6 +30,8 @@ const styles = {
   author: { color: "#b9ffd4", fontSize: "13px", fontWeight: 800, margin: "0 0 10px" },
   body: { color: "#e2ebe5", fontSize: "15px", lineHeight: 1.65, margin: 0, whiteSpace: "pre-wrap" as const, overflowWrap: "anywhere" as const },
   meta: { color: "#84958b", display: "flex", flexWrap: "wrap" as const, gap: "10px", fontSize: "11px", marginTop: "12px" },
+  storage: { background: "#050807", border: "1px solid #1f382b", borderRadius: "10px", color: "#a9b8af", fontSize: "12px", lineHeight: 1.5, marginTop: "14px", padding: "10px 12px" },
+  storageStrong: { color: "#b9ffd4", fontWeight: 800 },
   media: { aspectRatio: "16 / 10", background: "#050807", borderTop: "1px solid #1f382b", maxHeight: "680px", overflow: "hidden", width: "100%" },
   mediaImage: { display: "block", height: "100%", objectFit: "contain" as const, width: "100%" },
   mediaPlaceholder: { color: "#84958b", display: "grid", height: "100%", placeItems: "center", width: "100%" },
@@ -45,6 +47,19 @@ function formatDate(timestampNanos?: number) {
   const date = new Date(Math.floor(timestampNanos / 1_000_000))
   if (Number.isNaN(date.getTime())) return null
   return new Intl.DateTimeFormat("en", { dateStyle: "medium", timeStyle: "short" }).format(date)
+}
+
+function storageStatus(post: DeSoPost) {
+  const hasExternalMedia = Boolean(post.ImageURLs?.length || post.VideoURLs?.length)
+  return hasExternalMedia
+    ? {
+        label: "DeSo on-chain · media externally linked",
+        detail: "The post record is read from DeSo. Linked image/video availability depends on its media host.",
+      }
+    : {
+        label: "DeSo on-chain",
+        detail: "This post has no linked image/video media in the data VIA received.",
+      }
 }
 
 async function loadPost(postHash: string): Promise<DeSoPost | null> {
@@ -82,6 +97,7 @@ export default async function PostView({ postHash, backHref = "/" }: { postHash:
   const imageUrl = post.ImageURLs?.[0]
   const videoUrl = post.VideoURLs?.[0]
   const hasMedia = Boolean(imageUrl || videoUrl)
+  const storage = storageStatus(post)
 
   return (
     <main style={styles.page}>
@@ -103,11 +119,15 @@ export default async function PostView({ postHash, backHref = "/" }: { postHash:
               <span>Diamonds {safeCount(post.DiamondCount)}</span>
               {post.IsNFT ? <span>NFT</span> : null}
             </div>
+            <div style={styles.storage} aria-label="Post storage status">
+              <span style={styles.storageStrong}>Storage status: {storage.label}</span><br />
+              {storage.detail}
+            </div>
             {replyCount > 0 ? <PublicPostThread postHash={postHash} replyCount={replyCount} /> : null}
           </div>
           {hasMedia ? (
             <div style={styles.media}>
-              <NFTMedia imageUrl={imageUrl} videoUrl={videoUrl} alt={`Public DeSo post by @${author}`} imageStyle={styles.mediaImage} placeholderStyle={styles.mediaPlaceholder} />
+              <NFTMedia imageUrl={imageUrl} videoUrl={videoUrl} watermark={Boolean(post.IsNFT)} alt={`Public DeSo post by @${author}`} imageStyle={styles.mediaImage} placeholderStyle={styles.mediaPlaceholder} />
             </div>
           ) : null}
         </article>
