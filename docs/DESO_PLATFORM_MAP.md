@@ -11,6 +11,19 @@ Doel: DeSo zo veel mogelijk als primaire openbare databron voor VIA gebruiken, z
 - Sociale signalen: follows/followers, likes, reposts/quotes en diamonds als openbare data wanneer een ondersteunde endpoint/SDK-functie dit levert.
 - Deelbare permanente VIA-routes: /post/[hash] en /nft/[hash], met DeSo als bron.
 
+## DeSo als voorraadmagazijn
+
+VIA behandelt DeSo als het primaire openbare voorraadmagazijn voor blockchain- en sociale gegevens. De interface haalt bestaande data op, ordent die en presenteert die zonder onnodige duplicatie.
+
+Per object onderscheiden we vier soorten bewaarstatus:
+
+1. **DeSo on-chain** — de relevante post/blockchaingegevens worden rechtstreeks uit DeSo gelezen.
+2. **Media extern gekoppeld** — de on-chain post of NFT bevat een URL naar beeld/video/audio; de mediabytes zelf zijn daarmee niet automatisch on-chain of permanent gegarandeerd.
+3. **Media niet beschikbaar** — de on-chain gegevens bestaan nog maar de gekoppelde mediabron reageert niet of is verdwenen.
+4. **Media extra veiliggesteld** — alleen gebruiken wanneer VIA later een aantoonbare redundante/permanente opslaglaag heeft ingericht en getest.
+
+Deze status mag op post- en NFT-detailpagina's worden getoond en later als filter worden gebruikt. VIA claimt nooit dat externe media permanent on-chain staat enkel omdat een URL in DeSo-data voorkomt.
+
 ## Eerstvolgende Fase 1 uitbreidingen
 
 1. Profielkaart rijker maken met beschikbare on-chain/sociale profielvelden.
@@ -18,6 +31,7 @@ Doel: DeSo zo veel mogelijk als primaire openbare databron voor VIA gebruiken, z
 3. NFT-detail verrijken met aantoonbare owner/copies/sale/bid velden; geen 'verified' label zonder echte bronwaarde.
 4. Post/NFT metadata gebruiken voor betere deelpreview/SEO, zonder te doen alsof externe media zelf on-chain staan.
 5. Herbruikbare DeSo data-adapter maken zodat alle VIA-schermen dezelfde normalisatie, timeout, retry en foutafhandeling gebruiken.
+6. Bewaarstatus consequent tonen op post- en NFT-detailweergaven.
 
 ## Fase 2 — alleen na ontwerp/goedkeuring
 
