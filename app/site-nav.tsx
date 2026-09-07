@@ -79,7 +79,7 @@ export default async function SiteNav() {
           <div style={styles.session}>
             <a href={`/profile/${encodeURIComponent(session.username)}`} style={styles.user}>@{session.username}</a>
             <form action="/api/session/logout" method="post">
-              <button type="submit" style={styles.logout}>Logout</button>
+              <button type="submit" style={styles.logout}>Disconnect</button>
             </form>
           </div>
         ) : (
