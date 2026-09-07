@@ -27,6 +27,12 @@ Een onderdeel komt hier terecht wanneer het kansrijk is, maar nog niet veilig of
 | Gasless/sponsored DeSo-transacties | Bespreken | Vereist een expliciet fee-, permissie-, limiet- en anti-misbruikmodel. |
 | In-feed mini-apps | Later onderzoeken | Interessant voor innovatie, maar sandboxing, rechten, veiligheid en mobiele UX moeten eerst worden ontworpen. |
 | Buy-burn/tokenomics-automatisering | Bespreken | Automatische geld- of tokenstromen zijn financieel en technisch kritisch en mogen niet zonder expliciet model worden geactiveerd. |
+| Automatische App Metadata/software-detectie | Onderzoeken | Detecteren van nieuwe publieke DeSo-appmetadata kan later waardevol zijn voor een innovatie-/ecosysteemoverzicht, maar de betrouwbaarheid en betekenis van de metadata moeten eerst officieel worden vastgesteld. |
+| Automatisch gedetecteerde software live uitvoeren | Niet zonder nieuw ontwerp | Externe metadata of HTML/JS mag nooit automatisch vertrouwd en uitgevoerd worden; vereist sandboxing, allowlisting, review en expliciete activatie. |
+| Browsergebaseerd admin/updatepaneel | Bespreken | Vereist sterke admin-authenticatie, rollen, auditlog, CSRF-bescherming, preview en rollback. Een publiek DeSo-adres of e-mailadres alleen is geen autorisatie. |
+| DAO-coins/orderbook diep in VIA | Later onderzoeken | DeSo-functionaliteit bestaat, maar nut en UX voor VIA moeten eerst worden bepaald zodat het NFT/sociale kernproduct niet onnodig complex wordt. |
+| Volledige timed-auction UX | Bespreken | Veilingtimers, biedstatus, afronding, race-conditions en signing moeten als één betrouwbare transactiestroom worden ontworpen. |
+| Unlockable/exclusive NFT-inhoud | Bespreken | Bezitscontrole, toegangsherroeping, opslag en lekpreventie moeten worden ontworpen voordat geheime content wordt aangeboden. |
 
 ## Niet parkeren: hoort bij de kern
 
@@ -43,6 +49,9 @@ Deze onderdelen blijven onderdeel van de actieve VIA-richting en worden dus niet
 - datazuinig gedrag voor tragere mobiele verbindingen;
 - duidelijke foutstatus bij verdwenen of onbereikbare NFT-media;
 - veilige sociale deelbaarheid van publieke VIA-links;
+- transparante royalty- en kostenweergave vóór toekomstige transacties;
+- geen automatische herhaling van onzekere blockchaintransacties;
+- draagbaarheid van publieke DeSo-data;
 - internationale bruikbaarheid;
 - VIA als nieuwe plaats voor DeSo-NFT's na het wegvallen van NFTz.
 
