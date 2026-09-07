@@ -69,8 +69,8 @@ export default async function Home({ searchParams }: HomeProps) {
             <div style={styles.moduleText}>Hot, recent, following and media feeds with public DeSo posts and replies.</div>
           </a>
           <a href="/#account-lookup-heading" style={styles.module}>
-            <div style={styles.moduleTitle}>NFTs</div>
-            <div style={styles.moduleText}>Browse public DeSo collections, sale status, copies and media from one place.</div>
+            <div style={styles.moduleTitle}>Marketplace</div>
+            <div style={styles.moduleText}>Browse public DeSo NFT collections, sale status, copies and media from one place.</div>
           </a>
           <a href="/discover" style={styles.module}>
             <div style={styles.moduleTitle}>Discover</div>
