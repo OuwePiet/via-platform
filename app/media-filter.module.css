@@ -45,6 +45,27 @@
   border-bottom: 1px solid #254233;
 }
 
+.stampGrid > * {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.stampGrid img,
+.stampGrid video {
+  aspect-ratio: 1 / 1;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 100%;
+}
+
+.stampGrid h2,
+.stampGrid h3,
+.stampGrid p,
+.stampGrid button {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .desktopPanel {
     display: none;

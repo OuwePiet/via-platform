@@ -26,7 +26,7 @@ export type SortData = {
 }
 
 type SortType = "collection" | "title" | "price-low" | "price-high"
-type DensityType = "comfortable" | "compact"
+type DensityType = "comfortable" | "compact" | "stamp"
 
 type MediaFilterProps = {
   mediaTypes: MediaFilterType[]
@@ -58,6 +58,12 @@ const sortLabels: Record<SortType, string> = {
   "price-high": "Price high–low",
 }
 
+const densityLabels: Record<DensityType, string> = {
+  comfortable: "Normal",
+  compact: "Compact",
+  stamp: "Postzegel",
+}
+
 type VoiceUndoState = {
   mediaFilter: "all" | MediaFilterType
   saleFilter: "all" | SaleFilterType
@@ -86,13 +92,6 @@ const saleFilterOptions: Array<{
 ]
 
 const styles = {
-  filterBar: {
-    display: "flex",
-    flexWrap: "wrap" as const,
-    alignItems: "center",
-    gap: "18px 28px",
-    margin: "0 0 24px",
-  },
   activeLabels: {
     display: "flex",
     flexWrap: "wrap" as const,
@@ -197,6 +196,7 @@ export default function MediaFilter({
     useState<VoiceUndoState | null>(null)
   const cards = Children.toArray(children)
   const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase("en")
+
   useEffect(() => {
     let restoredKey: string | null = null
 
@@ -225,29 +225,13 @@ export default function MediaFilter({
           "price-high",
         ].includes(stored.sort ?? "")
 
-        if (validMediaFilter && stored.mediaFilter) {
-          setActiveMediaFilter(stored.mediaFilter)
+        if (validMediaFilter && stored.mediaFilter) setActiveMediaFilter(stored.mediaFilter)
+        if (validSaleFilter && stored.saleFilter) setActiveSaleFilter(stored.saleFilter)
+        if (validSort && stored.sort) setActiveSort(stored.sort)
+        if (typeof stored.search === "string") setSearchQuery(stored.search)
+        if (["comfortable", "compact", "stamp"].includes(stored.density ?? "")) {
+          setDensity(stored.density as DensityType)
         }
-
-        if (validSaleFilter && stored.saleFilter) {
-          setActiveSaleFilter(stored.saleFilter)
-        }
-
-        if (validSort && stored.sort) {
-          setActiveSort(stored.sort)
-        }
-
-        if (typeof stored.search === "string") {
-          setSearchQuery(stored.search)
-        }
-
-        if (
-          stored.density === "comfortable" ||
-          stored.density === "compact"
-        ) {
-          setDensity(stored.density)
-        }
-
         if (
           typeof stored.visibleLimit === "number" &&
           Number.isFinite(stored.visibleLimit) &&
@@ -270,7 +254,6 @@ export default function MediaFilter({
 
   useEffect(() => {
     if (!isStateRestored) return
-
     const stored: StoredControls = {
       mediaFilter: activeMediaFilter,
       saleFilter: activeSaleFilter,
@@ -279,17 +262,8 @@ export default function MediaFilter({
       visibleLimit,
       density,
     }
-
     sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(stored))
-  }, [
-    activeMediaFilter,
-    activeSaleFilter,
-    density,
-    activeSort,
-    isStateRestored,
-    searchQuery,
-    visibleLimit,
-  ])
+  }, [activeMediaFilter, activeSaleFilter, density, activeSort, isStateRestored, searchQuery, visibleLimit])
 
   const hasActiveControls =
     activeMediaFilter !== "all" ||
@@ -299,27 +273,15 @@ export default function MediaFilter({
     density !== "comfortable"
 
   const activeLabels = [
-    searchQuery.trim()
-      ? `Search: “${searchQuery.trim()}”`
-      : null,
+    searchQuery.trim() ? `Search: “${searchQuery.trim()}”` : null,
     activeMediaFilter !== "all"
-      ? `Media: ${
-          mediaFilterOptions.find(
-            ({ value }) => value === activeMediaFilter
-          )?.label ?? activeMediaFilter
-        }`
+      ? `Media: ${mediaFilterOptions.find(({ value }) => value === activeMediaFilter)?.label ?? activeMediaFilter}`
       : null,
     activeSaleFilter !== "all"
-      ? `Sale: ${
-          saleFilterOptions.find(
-            ({ value }) => value === activeSaleFilter
-          )?.label ?? activeSaleFilter
-        }`
+      ? `Sale: ${saleFilterOptions.find(({ value }) => value === activeSaleFilter)?.label ?? activeSaleFilter}`
       : null,
-    activeSort !== "collection"
-      ? `Sort: ${sortLabels[activeSort]}`
-      : null,
-    density !== "comfortable" ? "View: Compact" : null,
+    activeSort !== "collection" ? `Sort: ${sortLabels[activeSort]}` : null,
+    density !== "comfortable" ? `View: ${densityLabels[density]}` : null,
   ].filter((label): label is string => Boolean(label))
 
   const resetControls = () => {
@@ -341,59 +303,42 @@ export default function MediaFilter({
     }))
     .filter(
       ({ index }) =>
-        (activeMediaFilter === "all" ||
-          mediaTypes[index] === activeMediaFilter) &&
-        (activeSaleFilter === "all" ||
-          saleStatuses[index] === activeSaleFilter) &&
+        (activeMediaFilter === "all" || mediaTypes[index] === activeMediaFilter) &&
+        (activeSaleFilter === "all" || saleStatuses[index] === activeSaleFilter) &&
         (normalizedSearchQuery === "" ||
-          sortData[index]?.title
-            .toLocaleLowerCase("en")
-            .includes(normalizedSearchQuery) ||
-          sortData[index]?.creator
-            .toLocaleLowerCase("en")
-            .includes(normalizedSearchQuery))
+          sortData[index]?.title.toLocaleLowerCase("en").includes(normalizedSearchQuery) ||
+          sortData[index]?.creator.toLocaleLowerCase("en").includes(normalizedSearchQuery))
     )
 
   const sortedCards = [...visibleCards].sort((first, second) => {
     if (activeSort === "title") {
-      return first.title.localeCompare(second.title, "en", {
-        sensitivity: "base",
-      })
+      return first.title.localeCompare(second.title, "en", { sensitivity: "base" })
     }
-
     if (activeSort === "price-low" || activeSort === "price-high") {
       const firstPrice = first.price ?? Number.POSITIVE_INFINITY
       const secondPrice = second.price ?? Number.POSITIVE_INFINITY
-
-      if (!Number.isFinite(firstPrice) && !Number.isFinite(secondPrice)) {
-        return first.index - second.index
-      }
-
+      if (!Number.isFinite(firstPrice) && !Number.isFinite(secondPrice)) return first.index - second.index
       if (!Number.isFinite(firstPrice)) return 1
       if (!Number.isFinite(secondPrice)) return -1
-
-      return activeSort === "price-low"
-        ? firstPrice - secondPrice
-        : secondPrice - firstPrice
+      return activeSort === "price-low" ? firstPrice - secondPrice : secondPrice - firstPrice
     }
-
     return first.index - second.index
   })
 
   const effectiveGridStyle: CSSProperties = {
     ...gridStyle,
     gridTemplateColumns:
-      density === "compact"
-        ? "repeat(auto-fit, minmax(210px, 1fr))"
-        : gridStyle.gridTemplateColumns,
-    gap: density === "compact" ? "16px" : gridStyle.gap,
+      density === "stamp"
+        ? "repeat(auto-fill, minmax(110px, 1fr))"
+        : density === "compact"
+          ? "repeat(auto-fit, minmax(210px, 1fr))"
+          : gridStyle.gridTemplateColumns,
+    gap: density === "stamp" ? "8px" : density === "compact" ? "16px" : gridStyle.gap,
   }
 
-  const displayedCards = sortedCards.slice(0, visibleLimit)
-  const remainingCards = Math.max(
-    sortedCards.length - displayedCards.length,
-    0
-  )
+  const effectiveVisibleLimit = density === "stamp" ? sortedCards.length : visibleLimit
+  const displayedCards = sortedCards.slice(0, effectiveVisibleLimit)
+  const remainingCards = Math.max(sortedCards.length - displayedCards.length, 0)
 
   const rememberStateBeforeVoiceCommand = () => {
     setLastVoiceState({
@@ -409,50 +354,11 @@ export default function MediaFilter({
   const applyVoiceCommand = (spokenCommand: string) => {
     const command = spokenCommand.trim().toLocaleLowerCase()
     const mediaCommands: Record<string, "all" | MediaFilterType> = {
-      "show all": "all",
-      "show images": "image",
-      "show image": "image",
-      "show the images": "image",
-      "show me images": "image",
-      "images": "image",
-      "show videos": "video",
-      "show the videos": "video",
-      "videos": "video",
-      "show audio": "audio",
-      "play audio": "audio",
-      "show unavailable": "unavailable",
-      "alles tonen": "all",
-      "afbeeldingen tonen": "image",
-      "afbeelding tonen": "image",
-      "toon afbeeldingen": "image",
-      "toon de afbeeldingen": "image",
-      "laat afbeeldingen zien": "image",
-      "laat de afbeeldingen zien": "image",
-      "afbeeldingen": "image",
-      "video's tonen": "video",
-      "toon video's": "video",
-      "laat video's zien": "video",
-      "video's": "video",
-      "audio tonen": "audio",
-      "speel audio": "audio",
-      "niet beschikbaar tonen": "unavailable",
-      "tout afficher": "all",
-      "afficher les images": "image",
-      "afficher les vidéos": "video",
-      "afficher l'audio": "audio",
-      "afficher indisponible": "unavailable",
-      "mostrar todo": "all",
-      "mostrar imágenes": "image",
-      "mostrar vídeos": "video",
-      "mostrar audio": "audio",
-      "mostrar no disponible": "unavailable",
-      "显示全部": "all",
-      "显示图片": "image",
-      "显示视频": "video",
-      "显示音频": "audio",
-      "显示不可用": "unavailable",
+      "show all": "all", "show images": "image", "show image": "image", images: "image",
+      "show videos": "video", videos: "video", "show audio": "audio", "show unavailable": "unavailable",
+      "alles tonen": "all", "afbeeldingen tonen": "image", afbeeldingen: "image", "video's tonen": "video",
+      "audio tonen": "audio", "niet beschikbaar tonen": "unavailable",
     }
-
     if (mediaCommands[command]) {
       rememberStateBeforeVoiceCommand()
       setActiveMediaFilter(mediaCommands[command])
@@ -460,92 +366,52 @@ export default function MediaFilter({
       return true
     }
 
-    const forSaleCommands = [
-      "for sale",
-      "show for sale",
-      "show items for sale",
-      "items for sale",
-      "te koop",
-      "toon te koop",
-      "toon wat te koop is",
-      "à vendre",
-      "en venta",
-      "出售中",
-    ]
-    const notForSaleCommands = [
-      "not for sale",
-      "show not for sale",
-      "show items not for sale",
-      "niet te koop",
-      "toon niet te koop",
-      "toon wat niet te koop is",
-      "pas à vendre",
-      "no está en venta",
-      "非出售",
-    ]
-
-    if (forSaleCommands.includes(command)) {
+    if (["for sale", "show for sale", "te koop", "toon te koop"].includes(command)) {
       rememberStateBeforeVoiceCommand()
       setActiveSaleFilter("for-sale")
       setVisibleLimit(PAGE_SIZE)
       return true
     }
-
-    if (notForSaleCommands.includes(command)) {
+    if (["not for sale", "show not for sale", "niet te koop", "toon niet te koop"].includes(command)) {
       rememberStateBeforeVoiceCommand()
       setActiveSaleFilter("not-for-sale")
       setVisibleLimit(PAGE_SIZE)
       return true
     }
-
-    if (
-      ["comfortable view", "comfortable", "normal view",
-        "comfortabele weergave", "comfortabel", "normale weergave", "vue confortable",
-        "vista cómoda", "舒适视图"].includes(command)
-    ) {
+    if (["comfortable view", "comfortable", "normal view", "normale weergave", "normaal"].includes(command)) {
       rememberStateBeforeVoiceCommand()
       setDensity("comfortable")
       return true
     }
-
-    if (
-      ["compact view", "compact", "compacte weergave", "compact", "vue compacte",
-        "vista compacta", "紧凑视图"].includes(command)
-    ) {
+    if (["compact view", "compact", "compacte weergave"].includes(command)) {
       rememberStateBeforeVoiceCommand()
       setDensity("compact")
       return true
     }
-
-    if (
-      ["reset controls", "reset the controls", "bediening resetten",
-        "reset bediening", "herstel bediening",
-        "réinitialiser les commandes", "restablecer controles",
-        "重置控件"].includes(command)
-    ) {
+    if (["stamp view", "stamp", "postage stamp", "postzegel", "postzegelweergave", "kleine afbeeldingen"].includes(command)) {
+      rememberStateBeforeVoiceCommand()
+      setDensity("stamp")
+      return true
+    }
+    if (["reset controls", "bediening resetten", "reset bediening"].includes(command)) {
       rememberStateBeforeVoiceCommand()
       resetControls()
       return true
     }
 
     const searchPrefixes = ["search ", "zoeken ", "rechercher ", "buscar ", "搜索 "]
-    const searchPrefix = searchPrefixes.find((prefix) =>
-      command.startsWith(prefix)
-    )
-
+    const searchPrefix = searchPrefixes.find((prefix) => command.startsWith(prefix))
     if (searchPrefix) {
       rememberStateBeforeVoiceCommand()
       setSearchQuery(spokenCommand.trim().slice(searchPrefix.length))
       setVisibleLimit(PAGE_SIZE)
       return true
     }
-
     return false
   }
 
   const undoLastVoiceCommand = () => {
     if (!lastVoiceState) return
-
     setActiveMediaFilter(lastVoiceState.mediaFilter)
     setActiveSaleFilter(lastVoiceState.saleFilter)
     setActiveSort(lastVoiceState.sort)
@@ -557,196 +423,113 @@ export default function MediaFilter({
 
   const renderControls = () => (
     <>
-        <input
-          type="search"
-          aria-label="Search NFT collection"
-          placeholder="Search by title or creator"
-          value={searchQuery}
-          style={styles.search}
-          onChange={(event) => {
-            setSearchQuery(event.target.value)
-            setVisibleLimit(PAGE_SIZE)
-          }}
-        />
+      <input
+        type="search"
+        aria-label="Search NFT collection"
+        placeholder="Search by title or creator"
+        value={searchQuery}
+        style={styles.search}
+        onChange={(event) => {
+          setSearchQuery(event.target.value)
+          setVisibleLimit(PAGE_SIZE)
+        }}
+      />
 
-        <div
-          style={styles.controls}
-          aria-label="Filter collection by media"
-        >
-          <span style={styles.label}>Media</span>
-          {mediaFilterOptions.map((option) => {
-            const isActive = activeMediaFilter === option.value
+      <div style={styles.controls} aria-label="Filter collection by media">
+        <span style={styles.label}>Media</span>
+        {mediaFilterOptions.map((option) => {
+          const isActive = activeMediaFilter === option.value
+          return (
+            <button key={option.value} type="button" aria-pressed={isActive}
+              style={{ ...styles.button, ...(isActive ? styles.activeButton : {}) }}
+              onClick={() => { setActiveMediaFilter(option.value); setVisibleLimit(PAGE_SIZE) }}>
+              {option.label}
+            </button>
+          )
+        })}
+      </div>
 
-            return (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={isActive}
-                style={{
-                  ...styles.button,
-                  ...(isActive ? styles.activeButton : {}),
-                }}
-                onClick={() => {
-                  setActiveMediaFilter(option.value)
-                  setVisibleLimit(PAGE_SIZE)
-                }}
-              >
-                {option.label}
-              </button>
-            )
-          })}
-        </div>
+      <div style={styles.controls} aria-label="Filter collection by sale status">
+        <span style={styles.label}>Sale</span>
+        {saleFilterOptions.map((option) => {
+          const isActive = activeSaleFilter === option.value
+          return (
+            <button key={option.value} type="button" aria-pressed={isActive}
+              style={{ ...styles.button, ...(isActive ? styles.activeButton : {}) }}
+              onClick={() => { setActiveSaleFilter(option.value); setVisibleLimit(PAGE_SIZE) }}>
+              {option.label}
+            </button>
+          )
+        })}
+      </div>
 
-        <div
-          style={styles.controls}
-          aria-label="Filter collection by sale status"
-        >
-          <span style={styles.label}>Sale</span>
-          {saleFilterOptions.map((option) => {
-            const isActive = activeSaleFilter === option.value
+      <label style={styles.controls}>
+        <span style={styles.label}>Sort</span>
+        <select aria-label="Sort NFT collection" value={activeSort} style={styles.select}
+          onChange={(event) => { setActiveSort(event.target.value as SortType); setVisibleLimit(PAGE_SIZE) }}>
+          <option value="collection">Collection order</option>
+          <option value="title">Title A–Z</option>
+          <option value="price-low">Price low–high</option>
+          <option value="price-high">Price high–low</option>
+        </select>
+      </label>
 
-            return (
-              <button
-                key={option.value}
-                type="button"
-                aria-pressed={isActive}
-                style={{
-                  ...styles.button,
-                  ...(isActive ? styles.activeButton : {}),
-                }}
-                onClick={() => {
-                  setActiveSaleFilter(option.value)
-                  setVisibleLimit(PAGE_SIZE)
-                }}
-              >
-                {option.label}
-              </button>
-            )
-          })}
-        </div>
+      <div style={styles.controls} aria-label="Choose collection density">
+        <span style={styles.label}>View</span>
+        {(["comfortable", "compact", "stamp"] as const).map((option) => {
+          const isActive = density === option
+          return (
+            <button key={option} type="button" aria-pressed={isActive}
+              style={{ ...styles.button, ...(isActive ? styles.activeButton : {}) }}
+              onClick={() => setDensity(option)}>
+              {densityLabels[option]}
+            </button>
+          )
+        })}
+      </div>
 
-        <label style={styles.controls}>
-          <span style={styles.label}>Sort</span>
-          <select
-            aria-label="Sort NFT collection"
-            value={activeSort}
-            style={styles.select}
-            onChange={(event) => {
-              setActiveSort(event.target.value as SortType)
-              setVisibleLimit(PAGE_SIZE)
-            }}
-          >
-            <option value="collection">Collection order</option>
-            <option value="title">Title A–Z</option>
-            <option value="price-low">Price low–high</option>
-            <option value="price-high">Price high–low</option>
-          </select>
-        </label>
+      <VoiceControls onCommand={applyVoiceCommand} canUndo={lastVoiceState !== null} onUndo={undoLastVoiceCommand} />
 
-        <div
-          style={styles.controls}
-          aria-label="Choose collection density"
-        >
-          <span style={styles.label}>View</span>
-          {(["comfortable", "compact"] as const).map((option) => {
-            const isActive = density === option
-
-            return (
-              <button
-                key={option}
-                type="button"
-                aria-pressed={isActive}
-                style={{
-                  ...styles.button,
-                  ...(isActive ? styles.activeButton : {}),
-                }}
-                onClick={() => setDensity(option)}
-              >
-                {option === "comfortable" ? "Comfortable" : "Compact"}
-              </button>
-            )
-          })}
-        </div>
-
-        <VoiceControls
-          onCommand={applyVoiceCommand}
-          canUndo={lastVoiceState !== null}
-          onUndo={undoLastVoiceCommand}
-        />
-
-        <button
-          type="button"
-          disabled={!hasActiveControls}
-          style={{
-            ...styles.button,
-            ...(!hasActiveControls
-              ? { cursor: "default", opacity: 0.45 }
-              : {}),
-          }}
-          onClick={resetControls}
-        >
-          Reset controls
-        </button>
+      <button type="button" disabled={!hasActiveControls}
+        style={{ ...styles.button, ...(!hasActiveControls ? { cursor: "default", opacity: 0.45 } : {}) }}
+        onClick={resetControls}>
+        Reset controls
+      </button>
     </>
   )
 
   return (
     <>
-      <section
-        className={layoutStyles.desktopPanel}
-        aria-label="Collection controls"
-      >
-        <strong className={layoutStyles.panelHeading}>
-          Collection controls
-        </strong>
-        <div className={layoutStyles.panelContent}>
-          {renderControls()}
-        </div>
+      <section className={layoutStyles.desktopPanel} aria-label="Collection controls">
+        <strong className={layoutStyles.panelHeading}>Collection controls</strong>
+        <div className={layoutStyles.panelContent}>{renderControls()}</div>
       </section>
 
       <details className={layoutStyles.mobilePanel}>
-        <summary className={layoutStyles.mobileSummary}>
-          Collection controls
-        </summary>
-        <div className={layoutStyles.panelContent}>
-          {renderControls()}
-        </div>
+        <summary className={layoutStyles.mobileSummary}>Collection controls</summary>
+        <div className={layoutStyles.panelContent}>{renderControls()}</div>
       </details>
 
       {activeLabels.length > 0 ? (
-        <div
-          style={styles.activeLabels}
-          aria-label="Active collection controls"
-        >
+        <div style={styles.activeLabels} aria-label="Active collection controls">
           <span style={styles.label}>Active</span>
-          {activeLabels.map((label) => (
-            <span key={label} style={styles.activeLabel}>
-              {label}
-            </span>
-          ))}
+          {activeLabels.map((label) => <span key={label} style={styles.activeLabel}>{label}</span>)}
         </div>
       ) : null}
 
       <p style={styles.resultCount} aria-live="polite">
-        {displayedCards.length} of {cards.length}{" "}
-        {cards.length === 1 ? "NFT" : "NFTs"} shown
+        {displayedCards.length} of {cards.length} {cards.length === 1 ? "NFT" : "NFTs"} shown
       </p>
 
       {sortedCards.length > 0 ? (
         <>
-          <div style={effectiveGridStyle}>
+          <div style={effectiveGridStyle} className={density === "stamp" ? layoutStyles.stampGrid : undefined}>
             {displayedCards.map(({ card }) => card)}
           </div>
-
           {remainingCards > 0 ? (
             <div style={styles.loadMore}>
-              <button
-                type="button"
-                style={styles.button}
-                onClick={() =>
-                  setVisibleLimit((current) => current + PAGE_SIZE)
-                }
-              >
+              <button type="button" style={styles.button}
+                onClick={() => setVisibleLimit((current) => current + PAGE_SIZE)}>
                 Load more ({remainingCards})
               </button>
             </div>
