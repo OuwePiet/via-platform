@@ -415,7 +415,7 @@ export default async function NFTGrid({
         </div>
 
         <div style={styles.content}>
-          <span style={styles.badge}>DeSo verified</span>
+          <span style={styles.badge}>On DeSo</span>
 
           <h2 style={styles.title}>{cardTitle(post.Body)}</h2>
 
