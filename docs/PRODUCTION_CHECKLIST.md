@@ -8,6 +8,10 @@ Deze checklist beschermt de werkende productieversie tijdens verdere ontwikkelin
 - Houd de publieke NFT-weergave read-only tenzij een aparte transactiemodule expliciet wordt gebouwd.
 - Sla nooit private keys, seed phrases of andere wallet-geheimen op in de repository.
 - DeSo/on-chain blijft bron van waarheid voor NFT-eigendom.
+- Een publieke VIA-sessie mag nooit worden gebruikt als autorisatie voor writes, betalingen of beheeracties.
+- Voeg geen fallback-DeSo-node toe voordat beschikbaarheid, API-compatibiliteit en consistente data expliciet zijn gecontroleerd.
+- Valideer creator/externe URL's op protocol en toegestane host voordat ze klikbaar worden; externe links zijn niet automatisch vertrouwd.
+- Gebruik een `sessionStorage`- of `localStorage`-vlag nooit als bewijs van leeftijd, identiteit of juridische verificatie.
 
 ## Voor merge naar main
 
@@ -22,9 +26,10 @@ Deze checklist beschermt de werkende productieversie tijdens verdere ontwikkelin
 - Voorkom browser-specifieke navigatie, touch- of scrolloplossingen die alleen in Safari/iOS werken.
 - Controleer dat ontbrekende media de pagina niet laten crashen.
 - Controleer dat gedeelde collectie/NFT-links blijven werken.
-- Controleer publieke profiel-deellinks naar X/LinkedIn zonder wallet- of transactietoegang.
+- Controleer publieke profiel-, post- en NFT-deellinks naar X/LinkedIn zonder wallet- of transactietoegang.
 - Test op tragere mobiele verbindingen: afbeeldingen lazy-loaden waar mogelijk en video's mogen niet onnodig volledig vooraf laden.
 - Beperk eerste mobiele payloads; een feed of collectie moet bruikbaar worden voordat alle zware media zijn geladen.
+- Controleer dat geen externe metadata, HTML of database-inhoud als uitvoerbare code wordt behandeld.
 
 ## Na merge
 
