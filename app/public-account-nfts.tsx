@@ -6,6 +6,7 @@ import NFTMedia from "./nft-media"
 
 const PAGE_SIZE = 25
 const DESO_PAGE_LIMIT = 100
+const MAX_SESSION_CACHE_CHARS = 2_000_000
 const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov", ".m4v"]
 const AUDIO_EXTENSIONS = [".mp3", ".wav", ".m4a", ".aac", ".flac", ".oga"]
 
@@ -232,7 +233,9 @@ export default function PublicAccountNFTs({ publicKey, username, autoLoad = fals
   const persist = useCallback((nextNFTs: NFTCollection[], key: string, done: boolean) => {
     try {
       const cached: CachedCollection = { nfts: nextNFTs, nextKeyHex: key, fullyLoaded: done }
-      window.sessionStorage.setItem(cacheKey, JSON.stringify(cached))
+      const serialized = JSON.stringify(cached)
+      if (serialized.length > MAX_SESSION_CACHE_CHARS) return
+      window.sessionStorage.setItem(cacheKey, serialized)
     } catch {
       // Progressive loading continues even when session storage is unavailable.
     }
