@@ -74,6 +74,7 @@ export default async function SiteNav() {
       <div style={styles.links}>
         <a href="/" style={styles.link}>NFTs</a>
         <a href="/feed" style={styles.link}>Feed</a>
+        <a href="/discover" style={styles.link}>Discover</a>
         <a href="/search" style={styles.link}>Creators</a>
         {session ? (
           <div style={styles.session}>
