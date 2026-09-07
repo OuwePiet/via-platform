@@ -1,8 +1,18 @@
+import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { fetchDeSo } from "../deso-api"
 import { decodePublicSession, SESSION_COOKIE } from "../session"
 
 export const dynamic = "force-dynamic"
+
+export const metadata: Metadata = {
+  title: "Notifications",
+  description: "Read-only DeSo notification activity for a connected VIA profile.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 type ProfileEntry = { Username?: string }
 type NotificationMetadata = {
