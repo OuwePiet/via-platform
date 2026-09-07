@@ -116,9 +116,7 @@ export default async function FeedPage({ searchParams }: PageProps) {
   const cookieStore = await cookies()
   const session = decodePublicSession(cookieStore.get(SESSION_COOKIE)?.value)
   const followingReady = mode === "following" && Boolean(session?.publicKeyBase58Check)
-  const rawPosts = followingReady
-    ? await loadFeed(mode, session?.publicKeyBase58Check)
-    : await loadFeed(mode, session?.publicKeyBase58Check)
+  const rawPosts = await loadFeed(mode, session?.publicKeyBase58Check)
   const posts = selectPosts(rawPosts, mode)
 
   const options: { key: FeedMode; label: string }[] = [
