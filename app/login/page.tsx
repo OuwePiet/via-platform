@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Login",
+  title: "Connect public DeSo profile",
   description: "Connect a public DeSo profile to VIA for read-only personalization.",
 }
 
@@ -33,7 +33,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
   return (
     <main style={styles.page}>
       <section style={styles.card}>
-        <h1 style={styles.heading}>Connect to VIA</h1>
+        <h1 style={styles.heading}>Connect public DeSo profile</h1>
         <p style={styles.text}>
           Enter your public DeSo username. VIA verifies the matching public profile and uses only its public key for read-only personalization such as Following.
         </p>
@@ -41,10 +41,10 @@ export default async function LoginPage({ searchParams }: PageProps) {
         <form action="/api/session" method="post" style={styles.form}>
           <label htmlFor="username">DeSo username</label>
           <input id="username" name="username" placeholder="OuwePiet" autoComplete="username" required style={styles.input} />
-          <button type="submit" style={styles.button}>Use public DeSo profile</button>
+          <button type="submit" style={styles.button}>Connect public profile</button>
         </form>
         <p style={styles.note}>
-          No seed phrase, private key or derived key is requested or stored in this step. This is not yet transaction authorization.
+          This is a read-only public profile connection, not authentication or transaction authorization. No seed phrase, private key or derived key is requested or stored in this step.
         </p>
       </section>
     </main>
