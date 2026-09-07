@@ -76,6 +76,7 @@ export default async function SiteNav() {
         <a href="/feed" style={styles.link}>Feed</a>
         <a href="/discover" style={styles.link}>Discover</a>
         <a href="/search" style={styles.link}>Creators</a>
+        {session ? <a href="/notifications" style={styles.link}>Notifications</a> : null}
         {session ? (
           <div style={styles.session}>
             <a href={`/profile/${encodeURIComponent(session.username)}`} style={styles.user}>@{session.username}</a>
