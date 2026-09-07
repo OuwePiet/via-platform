@@ -83,6 +83,7 @@ export default async function SiteNav() {
     <nav style={styles.nav} aria-label="VIA main navigation">
       <a href="/" style={styles.brand} aria-label="VIA home">VIA</a>
       <div style={styles.links}>
+        <a href="/" style={styles.link}>Home</a>
         <a href="/" style={styles.link}>Marketplace</a>
         <a href="/feed" style={styles.link}>Feed</a>
         <a href="/discover" style={styles.link}>Discover</a>
