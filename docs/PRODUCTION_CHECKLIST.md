@@ -22,6 +22,9 @@ Deze checklist beschermt de werkende productieversie tijdens verdere ontwikkelin
 - Voorkom browser-specifieke navigatie, touch- of scrolloplossingen die alleen in Safari/iOS werken.
 - Controleer dat ontbrekende media de pagina niet laten crashen.
 - Controleer dat gedeelde collectie/NFT-links blijven werken.
+- Controleer publieke profiel-deellinks naar X/LinkedIn zonder wallet- of transactietoegang.
+- Test op tragere mobiele verbindingen: afbeeldingen lazy-loaden waar mogelijk en video's mogen niet onnodig volledig vooraf laden.
+- Beperk eerste mobiele payloads; een feed of collectie moet bruikbaar worden voordat alle zware media zijn geladen.
 
 ## Na merge
 

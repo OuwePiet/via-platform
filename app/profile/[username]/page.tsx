@@ -136,6 +136,9 @@ export default async function ProfilePage({ params }: PageProps) {
   }
 
   const displayName = profile.Username ?? decoded
+  const profileUrl = `https://viadeso.online/profile/${encodeURIComponent(displayName)}`
+  const shareText = encodeURIComponent(`Discover @${displayName} on VIA — DeSo social & NFTs`)
+  const shareUrl = encodeURIComponent(profileUrl)
 
   return (
     <main style={styles.page}>
@@ -156,6 +159,8 @@ export default async function ProfilePage({ params }: PageProps) {
         <div style={styles.actions}>
           <a href={`/?account=${encodeURIComponent(displayName)}`} style={styles.action}>NFT collection</a>
           <a href="/feed" style={styles.action}>DeSo feed</a>
+          <a href={`https://x.com/intent/tweet?text=${shareText}&url=${shareUrl}`} target="_blank" rel="noopener noreferrer" style={styles.action}>Share on X</a>
+          <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`} target="_blank" rel="noopener noreferrer" style={styles.action}>Share on LinkedIn</a>
         </div>
         <h2 style={styles.sectionHeading}>Recent posts</h2>
         <section style={styles.list} aria-label="Creator posts">
