@@ -16,6 +16,9 @@ Deze checklist beschermt de werkende productieversie tijdens verdere ontwikkelin
 - Controleer mediafilters, verkoopfilter, sortering en zoekfunctie.
 - Controleer mobiel/tablet gedrag op zowel iOS/iPadOS als Android.
 - Neem bij Android expliciet Samsung-telefoons/tablets en Samsung Internet mee, naast gangbare Android Chrome-schermformaten.
+- Controleer pc- en laptopgedrag op gangbare desktopbreedtes, inclusief Windows en macOS en waar praktisch Linux.
+- Neem op desktop/laptop minimaal Chrome, Edge en Firefox mee; controleer Safari op macOS.
+- Zorg dat responsive layouts bruikbaar blijven van kleine telefoons tot tablets, laptops en grote desktopschermen, zonder afgesneden navigatie of onnodig uitgerekte content.
 - Voorkom browser-specifieke navigatie, touch- of scrolloplossingen die alleen in Safari/iOS werken.
 - Controleer dat ontbrekende media de pagina niet laten crashen.
 - Controleer dat gedeelde collectie/NFT-links blijven werken.
