@@ -24,6 +24,13 @@ const styles = {
     textDecoration: "none",
     flexShrink: 0,
   },
+  domain: {
+    color: "#91a298",
+    fontSize: "9px",
+    fontWeight: 600,
+    letterSpacing: "0.04em",
+    marginLeft: "5px",
+  },
   links: {
     display: "flex",
     gap: "14px",
@@ -81,7 +88,7 @@ export default async function SiteNav() {
 
   return (
     <nav style={styles.nav} aria-label="VIA main navigation">
-      <a href="/" style={styles.brand} aria-label="VIA home">VIA</a>
+      <a href="/" style={styles.brand} aria-label="VIA home">VIA<span style={styles.domain}>viadeso.online</span></a>
       <div style={styles.links}>
         <a href="/" style={styles.link}>Home</a>
         <a href="/#account-lookup-heading" style={styles.link}>Marketplace</a>
