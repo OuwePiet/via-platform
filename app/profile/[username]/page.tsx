@@ -23,9 +23,13 @@ type Post = {
   VideoURLs?: string[]
 }
 
+type FollowsResponse = {
+  NumFollowers?: number
+}
+
 async function loadProfile(username: string) {
   try {
-    const [profileResponse, postsResponse] = await Promise.all([
+    const [profileResponse, postsResponse, followersResponse, followingResponse] = await Promise.all([
       fetchDeSo("get-single-profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -43,19 +47,47 @@ async function loadProfile(username: string) {
         }),
         cache: "no-store",
       }),
+      fetchDeSo("get-follows-stateless", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Username: username,
+          GetEntriesFollowingUsername: true,
+          LastPublicKeyBase58Check: "",
+          NumToFetch: 0,
+        }),
+        cache: "no-store",
+      }),
+      fetchDeSo("get-follows-stateless", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Username: username,
+          GetEntriesFollowingUsername: false,
+          LastPublicKeyBase58Check: "",
+          NumToFetch: 0,
+        }),
+        cache: "no-store",
+      }),
     ])
 
-    if (!profileResponse.ok) return { profile: null, posts: [] as Post[] }
+    if (!profileResponse.ok) {
+      return { profile: null, posts: [] as Post[], followers: null as number | null, following: null as number | null }
+    }
 
     const profileData = await profileResponse.json()
     const postsData = postsResponse.ok ? await postsResponse.json() : {}
+    const followersData = followersResponse.ok ? await followersResponse.json() as FollowsResponse : {}
+    const followingData = followingResponse.ok ? await followingResponse.json() as FollowsResponse : {}
 
     return {
       profile: (profileData.Profile ?? profileData.ProfileEntryResponse ?? null) as Profile | null,
       posts: (postsData.Posts ?? []) as Post[],
+      followers: typeof followersData.NumFollowers === "number" ? followersData.NumFollowers : null,
+      following: typeof followingData.NumFollowers === "number" ? followingData.NumFollowers : null,
     }
   } catch {
-    return { profile: null, posts: [] as Post[] }
+    return { profile: null, posts: [] as Post[], followers: null as number | null, following: null as number | null }
   }
 }
 
@@ -81,6 +113,8 @@ const styles = {
   heading: { fontSize: "clamp(28px, 5vw, 44px)", marginBottom: "8px" },
   description: { color: "#a9b8af", lineHeight: 1.6 },
   meta: { color: "#91a298", fontSize: "13px", lineHeight: 1.6, marginTop: "12px" },
+  socialStats: { display: "flex", gap: "14px", flexWrap: "wrap" as const, marginTop: "10px", color: "#dce8e0", fontSize: "14px" },
+  socialStat: { border: "1px solid #254233", borderRadius: "999px", padding: "6px 10px", background: "#0c120f" },
   actions: { display: "flex", gap: "12px", flexWrap: "wrap" as const, margin: "18px 0 28px" },
   action: { color: "#dce8e0", border: "1px solid #254233", borderRadius: "999px", padding: "8px 12px", textDecoration: "none" },
   sectionHeading: { fontSize: "18px", margin: "0 0 12px" },
@@ -95,7 +129,7 @@ const styles = {
 export default async function ProfilePage({ params }: PageProps) {
   const { username } = await params
   const decoded = decodeURIComponent(username).replace(/^@/, "")
-  const { profile, posts } = await loadProfile(decoded)
+  const { profile, posts, followers, following } = await loadProfile(decoded)
 
   if (!profile) {
     return <main style={styles.page}><div style={styles.container}><a href="/feed" style={styles.link}>← Back to feed</a><p>Profile unavailable.</p></div></main>
@@ -113,6 +147,12 @@ export default async function ProfilePage({ params }: PageProps) {
           Public DeSo key: {shortenedKey(profile.PublicKeyBase58Check)}<br />
           Recent public posts loaded: {posts.length}
         </div>
+        {(followers !== null || following !== null) ? (
+          <div style={styles.socialStats} aria-label="Public DeSo social graph counts">
+            {followers !== null ? <span style={styles.socialStat}>{followers.toLocaleString("en-US")} followers</span> : null}
+            {following !== null ? <span style={styles.socialStat}>{following.toLocaleString("en-US")} following</span> : null}
+          </div>
+        ) : null}
         <div style={styles.actions}>
           <a href={`/?account=${encodeURIComponent(displayName)}`} style={styles.action}>NFT collection</a>
           <a href="/feed" style={styles.action}>DeSo feed</a>
