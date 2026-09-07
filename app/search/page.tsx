@@ -98,7 +98,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                   <div style={styles.key}>{shortKey(accountKey)}</div>
                   <div style={styles.actions}>
                     <a href={`/profile/${encodeURIComponent(name)}`} style={styles.action}>Creator profile</a>
-                    <a href={`/?${collectionParams.toString()}#account-lookup-heading`} style={styles.action}>NFT collection</a>
+                    <a href={`/?${collectionParams.toString()}#account-lookup-heading`} style={styles.action}>Open in Marketplace</a>
                   </div>
                 </article>
               )
