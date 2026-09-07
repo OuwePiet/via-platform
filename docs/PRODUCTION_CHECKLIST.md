@@ -14,7 +14,9 @@ Deze checklist beschermt de werkende productieversie tijdens verdere ontwikkelin
 - Vercel preview/build moet slagen.
 - Controleer account lookup met minimaal `OuwePiet` en een grote externe collectie.
 - Controleer mediafilters, verkoopfilter, sortering en zoekfunctie.
-- Controleer mobiel/tablet gedrag.
+- Controleer mobiel/tablet gedrag op zowel iOS/iPadOS als Android.
+- Neem bij Android expliciet Samsung-telefoons/tablets en Samsung Internet mee, naast gangbare Android Chrome-schermformaten.
+- Voorkom browser-specifieke navigatie, touch- of scrolloplossingen die alleen in Safari/iOS werken.
 - Controleer dat ontbrekende media de pagina niet laten crashen.
 - Controleer dat gedeelde collectie/NFT-links blijven werken.
 
