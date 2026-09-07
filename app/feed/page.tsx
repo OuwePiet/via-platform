@@ -28,6 +28,22 @@ type FeedPost = {
 async function loadFeed(mode: FeedMode, reader?: string): Promise<FeedPost[]> {
   const useFollowing = mode === "following" && Boolean(reader)
   try {
+    if (mode === "hot") {
+      const response = await fetchDeSo("get-hot-feed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ReaderPublicKeyBase58Check: reader ?? "",
+          SeenPosts: [],
+          ResponseLimit: 40,
+        }),
+        cache: "no-store",
+      })
+      if (!response.ok) return []
+      const data = await response.json()
+      return data.HotFeedPage ?? []
+    }
+
     const response = await fetchDeSo("get-posts-stateless", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -68,12 +84,8 @@ function normalizeMode(value?: string): FeedMode {
   if (value === "hot" || value === "media" || value === "following") return value
   return "recent"
 }
-function engagementScore(post: FeedPost) {
-  return (post.DiamondCount ?? 0) * 4 + (post.RepostCount ?? 0) * 3 + (post.CommentCount ?? 0) * 2 + (post.LikeCount ?? 0)
-}
 function selectPosts(posts: FeedPost[], mode: FeedMode) {
   if (mode === "media") return posts.filter((post) => (post.ImageURLs?.length ?? 0) + (post.VideoURLs?.length ?? 0) > 0)
-  if (mode === "hot") return [...posts].sort((a, b) => engagementScore(b) - engagementScore(a))
   return posts
 }
 
@@ -104,9 +116,10 @@ export default async function FeedPage({ searchParams }: PageProps) {
   const cookieStore = await cookies()
   const session = decodePublicSession(cookieStore.get(SESSION_COOKIE)?.value)
   const followingReady = mode === "following" && Boolean(session?.publicKeyBase58Check)
-  const posts = followingReady
+  const rawPosts = followingReady
     ? await loadFeed(mode, session?.publicKeyBase58Check)
-    : selectPosts(await loadFeed(mode), mode)
+    : await loadFeed(mode, session?.publicKeyBase58Check)
+  const posts = selectPosts(rawPosts, mode)
 
   const options: { key: FeedMode; label: string }[] = [
     { key: "recent", label: "Recent" },
@@ -120,7 +133,7 @@ export default async function FeedPage({ searchParams }: PageProps) {
       <div style={styles.container}>
         <h1 style={styles.heading}>DeSo feed</h1>
         <p style={styles.intro}>
-          Discover public DeSo posts inside VIA. Recent keeps the node order, Hot ranks loaded posts by visible engagement, Media shows posts with media, and Following uses your connected public DeSo profile.
+          Discover public DeSo posts inside VIA. Recent keeps the node order, Hot uses DeSo&apos;s native hot-feed ranking, Media shows posts with media, and Following uses your connected public DeSo profile.
         </p>
 
         <nav style={styles.modes} aria-label="Feed views">
@@ -130,6 +143,8 @@ export default async function FeedPage({ searchParams }: PageProps) {
             </a>
           ))}
         </nav>
+
+        {mode === "hot" ? <p style={styles.note}>Hot is ranked by DeSo&apos;s native hot-feed service rather than a VIA-only engagement formula.</p> : null}
 
         {mode === "following" && !session ? (
           <p style={styles.note}>
