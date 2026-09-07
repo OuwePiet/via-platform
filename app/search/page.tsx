@@ -74,10 +74,10 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
     <main style={styles.page}>
       <div style={styles.container}>
         <h1 style={styles.heading}>Find creators</h1>
-        <p style={styles.intro}>Search public DeSo creators by username and open their VIA profile or NFT collection.</p>
+        <p style={styles.intro}>Search public DeSo creators by username and jump directly to their VIA profile or NFT collection.</p>
 
         <form action="/search" method="get" style={styles.form} role="search">
-          <input name="q" defaultValue={query} placeholder="Creator username, e.g. OuwePiet" aria-label="DeSo creator username" style={styles.input} />
+          <input name="q" defaultValue={query} placeholder="Creator username, e.g. OuwePiet" aria-label="DeSo creator username" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="search" style={styles.input} />
           <button type="submit" style={styles.button}>Search</button>
         </form>
 
@@ -89,14 +89,16 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
           <section style={styles.list} aria-label="Creator search results">
             {profiles.map((profile) => {
               const name = profile.Username ?? "DeSo user"
+              const accountKey = profile.PublicKeyBase58Check ?? ""
+              const collectionParams = new URLSearchParams({ account: name, accountKey, view: "nfts" })
               return (
-                <article key={profile.PublicKeyBase58Check ?? name} style={styles.card}>
+                <article key={accountKey || name} style={styles.card}>
                   <a href={`/profile/${encodeURIComponent(name)}`} style={styles.name}>@{name}</a>
                   <p style={styles.desc}>{profile.Description || "DeSo creator on VIA."}</p>
-                  <div style={styles.key}>{shortKey(profile.PublicKeyBase58Check)}</div>
+                  <div style={styles.key}>{shortKey(accountKey)}</div>
                   <div style={styles.actions}>
                     <a href={`/profile/${encodeURIComponent(name)}`} style={styles.action}>Creator profile</a>
-                    <a href={`/?account=${encodeURIComponent(name)}`} style={styles.action}>NFT collection</a>
+                    <a href={`/?${collectionParams.toString()}#account-lookup-heading`} style={styles.action}>NFT collection</a>
                   </div>
                 </article>
               )
