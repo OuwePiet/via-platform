@@ -19,6 +19,7 @@ type DeSoPost = {
 }
 
 type NFTEntry = {
+  SerialNumber?: number
   IsForSale?: boolean
   BuyNowPriceNanos?: number
   MinBidAmountNanos?: number
@@ -106,6 +107,22 @@ function title(body?: string) {
   return cleaned.length > 72 ? `${cleaned.slice(0, 69)}...` : cleaned
 }
 
+function mergeNFTEntries(current: NFTEntry[], incoming: NFTEntry[]) {
+  const bySerial = new Map<number, NFTEntry>()
+  const withoutSerial: NFTEntry[] = []
+
+  for (const entry of [...current, ...incoming]) {
+    if (typeof entry.SerialNumber === "number") {
+      const existing = bySerial.get(entry.SerialNumber)
+      bySerial.set(entry.SerialNumber, existing ? { ...existing, ...entry } : entry)
+    } else {
+      withoutSerial.push(entry)
+    }
+  }
+
+  return [...bySerial.values(), ...withoutSerial]
+}
+
 function mergeCollections(current: NFTCollection[], incoming: NFTCollection[]) {
   const byHash = new Map<string, NFTCollection>()
 
@@ -127,10 +144,10 @@ function mergeCollections(current: NFTCollection[], incoming: NFTCollection[]) {
     byHash.set(hash, {
       ...existing,
       PostEntryResponse: collection.PostEntryResponse ?? existing.PostEntryResponse,
-      NFTEntryResponses: [
-        ...(existing.NFTEntryResponses ?? []),
-        ...(collection.NFTEntryResponses ?? []),
-      ],
+      NFTEntryResponses: mergeNFTEntries(
+        existing.NFTEntryResponses ?? [],
+        collection.NFTEntryResponses ?? []
+      ),
     })
   }
 
@@ -174,6 +191,7 @@ export default function PublicAccountNFTs({ publicKey, username, autoLoad = fals
   const [mediaFilter, setMediaFilter] = useState<MediaFilter>("all")
   const [isInitialStateRestored, setIsInitialStateRestored] = useState(false)
   const autoLoadStarted = useRef(false)
+  const loadInFlight = useRef(false)
 
   useEffect(() => {
     if (!autoLoad || isInitialStateRestored) return
@@ -221,6 +239,8 @@ export default function PublicAccountNFTs({ publicKey, username, autoLoad = fals
   }, [cacheKey])
 
   const loadPage = useCallback(async (reset = false) => {
+    if (loadInFlight.current) return
+    loadInFlight.current = true
     setLoading(true)
     setError("")
 
@@ -256,6 +276,7 @@ export default function PublicAccountNFTs({ publicKey, username, autoLoad = fals
     } catch {
       setError("The public NFTs could not be retrieved from DeSo right now.")
     } finally {
+      loadInFlight.current = false
       setLoading(false)
     }
   }, [nextKeyHex, nfts, persist, publicKey])
