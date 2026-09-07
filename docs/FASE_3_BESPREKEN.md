@@ -33,6 +33,11 @@ Een onderdeel komt hier terecht wanneer het kansrijk is, maar nog niet veilig of
 | DAO-coins/orderbook diep in VIA | Later onderzoeken | DeSo-functionaliteit bestaat, maar nut en UX voor VIA moeten eerst worden bepaald zodat het NFT/sociale kernproduct niet onnodig complex wordt. |
 | Volledige timed-auction UX | Bespreken | Veilingtimers, biedstatus, afronding, race-conditions en signing moeten als één betrouwbare transactiestroom worden ontworpen. |
 | Unlockable/exclusive NFT-inhoud | Bespreken | Bezitscontrole, toegangsherroeping, opslag en lekpreventie moeten worden ontworpen voordat geheime content wordt aangeboden. |
+| Silent derived keys voor write-acties | Bespreken | Alleen met minimale rechten, harde expiratie, duidelijke gebruikersscope en betrouwbare revoke; gemak mag geen permanente transactiemacht opleveren. |
+| Automatische multi-node failover | Bespreken | Kandidaten uit oude documenten zijn niet automatisch vertrouwd; eerst uptime, API-compatibiliteit, data-consistentie en beheer/eigenaarschap verifiëren. |
+| 18+ verificatie/content-gating | Bespreken | Een lokale `sessionStorage`-vlag is geen echte leeftijdsverificatie. Vereisten verschillen per land en type content. |
+| Juridische MiCA/CASP-positionering | Externe beoordeling nodig | Oude documenten doen absolute juridische claims die niet als waarheid mogen worden ingebouwd. Betaal-, swap-, custody- en tokenfuncties vereisen actuele beoordeling. |
+| Creator-links naar WhatsApp/externe commerce | Bespreken | Bruikbaar idee, maar alleen met strikte URL/host-validatie, phishingbescherming en duidelijke externe-link UX. |
 
 ## Niet parkeren: hoort bij de kern
 
