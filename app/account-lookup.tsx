@@ -271,10 +271,10 @@ export default function AccountLookup({
   return (
     <section style={styles.section} aria-labelledby="account-lookup-heading">
       <h2 id="account-lookup-heading" style={styles.heading}>
-        Find DeSo account
+        Find DeSo NFT collection
       </h2>
       <p style={styles.text}>
-        Read-only public profile check. No login, wallet connection or storage.
+        Search a public DeSo creator to browse their NFT collection. Read-only; no wallet connection or transaction required.
       </p>
 
       <form style={styles.form} onSubmit={findAccount}>
@@ -282,13 +282,13 @@ export default function AccountLookup({
           type="search"
           aria-label="DeSo username"
           autoComplete="off"
-          placeholder="Enter DeSo username"
+          placeholder="Enter DeSo creator username"
           value={username}
           style={styles.input}
           onChange={(event) => setUsername(event.target.value)}
         />
         <button type="submit" disabled={loading} style={styles.button}>
-          {loading ? "Checking…" : "Find DeSo account"}
+          {loading ? "Checking…" : "Find NFT collection"}
         </button>
       </form>
 
