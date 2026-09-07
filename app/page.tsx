@@ -77,7 +77,7 @@ export default async function Home({ searchParams }: HomeProps) {
             <div style={styles.moduleText}>Move from content to creators, profiles and their on-chain collections.</div>
           </a>
           <a href="/search" style={styles.module}>
-            <div style={styles.moduleTitle}>Creators</div>
+            <div style={styles.moduleTitle}>Search creators</div>
             <div style={styles.moduleText}>Find a DeSo creator and continue directly to social activity or NFTs.</div>
           </a>
           <a href="/world-time" style={styles.module}>
