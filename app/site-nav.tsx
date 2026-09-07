@@ -87,6 +87,7 @@ export default async function SiteNav() {
         <a href="/feed" style={styles.link}>Feed</a>
         <a href="/discover" style={styles.link}>Discover</a>
         <a href="/search" style={styles.link}>Creators</a>
+        <a href="/world-time" style={styles.link}>World Time</a>
         {session ? <a href="/notifications" style={styles.link}>Notifications</a> : null}
         {session ? (
           <div style={styles.session}>
