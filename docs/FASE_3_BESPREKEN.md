@@ -38,6 +38,8 @@ Een onderdeel komt hier terecht wanneer het kansrijk is, maar nog niet veilig of
 | 18+ verificatie/content-gating | Bespreken | Een lokale `sessionStorage`-vlag is geen echte leeftijdsverificatie. Vereisten verschillen per land en type content. |
 | Juridische MiCA/CASP-positionering | Externe beoordeling nodig | Oude documenten doen absolute juridische claims die niet als waarheid mogen worden ingebouwd. Betaal-, swap-, custody- en tokenfuncties vereisen actuele beoordeling. |
 | Creator-links naar WhatsApp/externe commerce | Bespreken | Bruikbaar idee, maar alleen met strikte URL/host-validatie, phishingbescherming en duidelijke externe-link UX. |
+| Welcome Feed / First Posts | Onderzoeken | Oude documenten noemen deze als vaste feedmodi, maar zonder betrouwbare officiële DeSo-definitie of endpoint mogen we geen kunstmatige ranking presenteren alsof die native is. |
+| NFT-eventnotificaties voor bod, claim, veiling en verkoop | Later bouwen | Pas activeren zodra de bijbehorende echte DeSo write-/signingflows bestaan en de eventstatus betrouwbaar kan worden afgeleid; geen fictieve transactiemeldingen. |
 
 ## Niet parkeren: hoort bij de kern
 
