@@ -68,6 +68,10 @@ export default async function Home({ searchParams }: HomeProps) {
             <div style={styles.moduleTitle}>Social</div>
             <div style={styles.moduleText}>Hot, recent, following and media feeds with public DeSo posts and replies.</div>
           </a>
+          <a href="/#account-lookup-heading" style={styles.module}>
+            <div style={styles.moduleTitle}>NFTs</div>
+            <div style={styles.moduleText}>Browse public DeSo collections, sale status, copies and media from one place.</div>
+          </a>
           <a href="/discover" style={styles.module}>
             <div style={styles.moduleTitle}>Discover</div>
             <div style={styles.moduleText}>Move from content to creators, profiles and their on-chain collections.</div>
@@ -75,6 +79,10 @@ export default async function Home({ searchParams }: HomeProps) {
           <a href="/search" style={styles.module}>
             <div style={styles.moduleTitle}>Creators</div>
             <div style={styles.moduleText}>Find a DeSo creator and continue directly to social activity or NFTs.</div>
+          </a>
+          <a href="/world-time" style={styles.module}>
+            <div style={styles.moduleTitle}>World Time</div>
+            <div style={styles.moduleText}>Check major creator regions worldwide without leaving VIA.</div>
           </a>
         </div>
       </section>
