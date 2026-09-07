@@ -1,0 +1,53 @@
+.wrap {
+  min-height: 38vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  background: #050807;
+}
+
+.lamp {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #285f40;
+  border-radius: 50%;
+  background: #0c120f;
+  color: #b9ffd4;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  animation: viaHeartbeat 2.8s ease-in-out infinite;
+}
+
+.text {
+  color: #84958b;
+  font-size: 12px;
+}
+
+@keyframes viaHeartbeat {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(0.96);
+    box-shadow: 0 0 0 rgba(92, 255, 157, 0);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.04);
+    box-shadow: 0 0 18px rgba(92, 255, 157, 0.22);
+  }
+  58% {
+    opacity: 0.72;
+    transform: scale(1);
+    box-shadow: 0 0 8px rgba(92, 255, 157, 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lamp {
+    animation: none;
+    opacity: 0.85;
+  }
+}
