@@ -18,6 +18,15 @@ Een onderdeel komt hier terecht wanneer het kansrijk is, maar nog niet veilig of
 | Wereldwijde/regiospecifieke uitbreiding | Later onderzoeken | Taal, wetgeving, betaalmethoden en moderatie verschillen per regio. |
 | Mirror/staking-integraties | Later onderzoeken | Externe protocolafhankelijkheden en actuele werking moeten eerst worden geverifieerd. |
 | Uitgebreide privéchat | Bespreken | Privacy, opslag, moderatie en DeSo-integratie moeten vooraf duidelijk zijn. |
+| Wallet-lichte onboarding via e-mail/passkey | Bespreken | E-mail/passkey kan toegang vereenvoudigen, maar mag nooit stilzwijgend DeSo-transactiebevoegdheid geven; signing en herstel moeten eerst worden ontworpen. |
+| AI-hulp voor alt-tekst, titels, hashtags en deelteksten | Later onderzoeken | Provider, privacy, kosten, moderatie en expliciete gebruikerskeuze moeten eerst vaststaan. |
+| AI-covers/placeholders voor video en NFT-media | Later onderzoeken | Automatische generatie verandert creatorcontent; opslag, rechten, kosten en opt-in moeten eerst worden bepaald. |
+| Regionale betaalmethoden UPI / Alipay / WeChat Pay | Bespreken | Beschikbaarheid, wetgeving, providerdekking, settlement en kosten per regio moeten eerst actueel worden geverifieerd. |
+| Regio-badges en lokale Top Creator-ranglijsten | Bespreken | Rankingcriteria, manipulatie, geografische toewijzing en moderatie moeten eerst eerlijk en controleerbaar zijn. |
+| Externe verificatie via X/TikTok/andere platforms | Later onderzoeken | Bewijsbron, privacy, herverificatie en afhankelijkheid van derden moeten eerst worden vastgesteld. |
+| Gasless/sponsored DeSo-transacties | Bespreken | Vereist een expliciet fee-, permissie-, limiet- en anti-misbruikmodel. |
+| In-feed mini-apps | Later onderzoeken | Interessant voor innovatie, maar sandboxing, rechten, veiligheid en mobiele UX moeten eerst worden ontworpen. |
+| Buy-burn/tokenomics-automatisering | Bespreken | Automatische geld- of tokenstromen zijn financieel en technisch kritisch en mogen niet zonder expliciet model worden geactiveerd. |
 
 ## Niet parkeren: hoort bij de kern
 
@@ -28,8 +37,12 @@ Deze onderdelen blijven onderdeel van de actieve VIA-richting en worden dus niet
 - media, filters, sortering en zoeken;
 - veilige login zonder seed-frictie waar technisch verantwoord;
 - mobiel/tablet gebruik;
+- pc- en laptopgebruik;
 - duidelijke kosten en betaalrouting;
 - robuuste productie, monitoring en herstelbaarheid;
+- datazuinig gedrag voor tragere mobiele verbindingen;
+- duidelijke foutstatus bij verdwenen of onbereikbare NFT-media;
+- veilige sociale deelbaarheid van publieke VIA-links;
 - internationale bruikbaarheid;
 - VIA als nieuwe plaats voor DeSo-NFT's na het wegvallen van NFTz.
 
