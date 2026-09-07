@@ -16,8 +16,10 @@ Documenten worden niet blind samengevoegd. Elk uniek punt krijgt één van drie 
 | --- | --- | --- |
 | Publieke follower/following-context bij creatorprofielen | Actief gebouwd | Read-only via officiële DeSo `get-follows-stateless`; geen signing of blockchain-write. |
 | Datazuinig mobiel gedrag | Kernrichting | Lazy images, beperkte media per kaart en `preload=metadata` voor video blijven leidend; verder toetsen op Android/Samsung en iOS. |
-| Duidelijke foutstatus bij verdwenen NFT-media | Kernrichting | Opnemen in NFT/media-hardening; geen stille lege kaarten. |
-| Sociale deelbaarheid van NFT/post-links | Kernrichting | Veilige linkdeling kan zonder walletmachtiging worden uitgebreid. |
+| Duidelijke foutstatus bij verdwenen NFT-media | Actief gebouwd | Ontbrekende media krijgen een zichtbare fout-/placeholderstatus; geen stille lege kaart of crash. |
+| Sociale deelbaarheid van NFT/post-links | Actief gebouwd | Publieke NFT- en postlinks kunnen veilig naar X/LinkedIn worden gedeeld zonder wallet- of transactietoegang. |
+| World Time voor internationale VIA-gebruikers | Actief gebouwd | Eigen VIA-pagina met 10 wereldsteden via browser-`Intl`, zonder externe tijd-API. |
+| Grote NFT-collecties veilig blijven laden | Actief gebouwd | Session-cache is begrensd zonder NFT-data te trunceren; boven de limiet blijft de collectie in-memory doorladen zodat geen cursor-gaten ontstaan. |
 | NFT verkoopvormen Buy Now, bod en veiling | Kernrichting | Publieke verkoopstatus en prijsinformatie read-only tonen; transactiestappen pas na veilig signingmodel. |
 | Unlockable/exclusive content | Kernrichting met beveiligingsgrens | Eigendomsstatus en aanwezigheid mogen zichtbaar zijn; geheime inhoud nooit publiek uitleveren. |
 | Royalty- en kostenoverzicht vóór transactie | Kernrichting | Transparantie over creator/holder royalty, blockchainkosten, servicefee en netto-opbrengst hoort vóór iedere toekomstige ondertekening. |
