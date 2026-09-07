@@ -9,6 +9,9 @@ const NFT_POST_HASHES = [
   "267cd00db324d831b35722da8e5cc8895b9b0da610d5e384b4578e49f8319e84",
 ]
 
+const DISCOVERED_NFT_LIMIT = 24
+const NFT_DETAIL_BATCH_SIZE = 4
+
 type DeSoPost = {
   PostHashHex?: string
   Body?: string
@@ -84,17 +87,17 @@ async function loadAutomaticNFTCount(publicKey: string) {
 
   for (let page = 0; page < 20; page += 1) {
     const response = await fetchDeSo("get-posts-for-public-key", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          PublicKeyBase58Check: publicKey,
-          ReaderPublicKeyBase58Check: "",
-          LastPostHashHex: lastPostHashHex,
-          NumToFetch: 12,
-          MediaRequired: false,
-        }),
-        cache: "no-store",
-      })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        PublicKeyBase58Check: publicKey,
+        ReaderPublicKeyBase58Check: "",
+        LastPostHashHex: lastPostHashHex,
+        NumToFetch: 12,
+        MediaRequired: false,
+      }),
+      cache: "no-store",
+    })
 
     if (!response.ok) return null
 
@@ -108,7 +111,7 @@ async function loadAutomaticNFTCount(publicKey: string) {
     nftCount += nftPosts.length
     for (const post of nftPosts) {
       if (
-        discoveredNFTPostHashes.length < 12 &&
+        discoveredNFTPostHashes.length < DISCOVERED_NFT_LIMIT &&
         post.PostHashHex &&
         !NFT_POST_HASHES.includes(post.PostHashHex) &&
         !discoveredNFTPostHashes.includes(post.PostHashHex)
@@ -195,6 +198,17 @@ async function loadNFT(postHash: string) {
     lowestBuyNowPrice,
     lowestMinBidAmount,
   }
+}
+
+async function loadNFTsInBatches(postHashes: string[]) {
+  const results: Awaited<ReturnType<typeof loadNFT>>[] = []
+
+  for (let index = 0; index < postHashes.length; index += NFT_DETAIL_BATCH_SIZE) {
+    const batch = postHashes.slice(index, index + NFT_DETAIL_BATCH_SIZE)
+    results.push(...(await Promise.all(batch.map(loadNFT))))
+  }
+
+  return results
 }
 
 function formatDeSo(nanos: number) {
@@ -357,9 +371,7 @@ export default async function NFTGrid({
   )
 
   const discoveredResults = automaticNFTResult
-    ? await Promise.all(
-        automaticNFTResult.discoveredNFTPostHashes.map(loadNFT)
-      )
+    ? await loadNFTsInBatches(automaticNFTResult.discoveredNFTPostHashes)
     : []
 
   const discoveredNFTs = discoveredResults.filter(
@@ -460,30 +472,30 @@ export default async function NFTGrid({
               {`Automatically added to collection: ${discoveredNFTs.length}`}
             </p>
             <div id="collection-controls">
-          <MediaFilter
-          mediaTypes={collectionNFTs.map(({ post }) =>
-            mediaFilterType(post)
-          )}
-          saleStatuses={collectionNFTs.map(({ forSaleCount }) =>
-            forSaleCount > 0 ? "for-sale" : "not-for-sale"
-          )}
-          sortData={collectionNFTs.map(
-            ({
-              post,
-              lowestBuyNowPrice,
-              lowestMinBidAmount,
-            }) => ({
-              title: cardTitle(post.Body),
-              creator: post.ProfileEntryResponse?.Username
-                ? `@${post.ProfileEntryResponse.Username}`
-                : "DeSo creator",
-              price: lowestBuyNowPrice ?? lowestMinBidAmount,
-            })
-          )}
-          gridStyle={styles.grid}
-        >
-          {collectionNFTs.map(renderNFTCard)}
-          </MediaFilter>
+              <MediaFilter
+                mediaTypes={collectionNFTs.map(({ post }) =>
+                  mediaFilterType(post)
+                )}
+                saleStatuses={collectionNFTs.map(({ forSaleCount }) =>
+                  forSaleCount > 0 ? "for-sale" : "not-for-sale"
+                )}
+                sortData={collectionNFTs.map(
+                  ({
+                    post,
+                    lowestBuyNowPrice,
+                    lowestMinBidAmount,
+                  }) => ({
+                    title: cardTitle(post.Body),
+                    creator: post.ProfileEntryResponse?.Username
+                      ? `@${post.ProfileEntryResponse.Username}`
+                      : "DeSo creator",
+                    price: lowestBuyNowPrice ?? lowestMinBidAmount,
+                  })
+                )}
+                gridStyle={styles.grid}
+              >
+                {collectionNFTs.map(renderNFTCard)}
+              </MediaFilter>
             </div>
           </>
         </CollectionBrowser>
