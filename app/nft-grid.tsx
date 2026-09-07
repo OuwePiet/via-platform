@@ -489,24 +489,12 @@ export default async function NFTGrid({
                     creator: post.ProfileEntryResponse?.Username
                       ? `@${post.ProfileEntryResponse.Username}`
                       : "DeSo creator",
-                    priceNanos:
-                      lowestBuyNowPrice ?? lowestMinBidAmount ?? null,
+                    price: lowestBuyNowPrice ?? lowestMinBidAmount,
                   })
                 )}
+                gridStyle={styles.grid}
               >
-                {collectionNFTs.map((nft, index) => (
-                  <div
-                    key={nft.postHash}
-                    data-media-type={mediaFilterType(nft.post)}
-                    data-sale-status={nft.forSaleCount > 0 ? "for-sale" : "not-for-sale"}
-                    data-nft-index={index}
-                    data-nft-title={cardTitle(nft.post.Body)}
-                    data-nft-creator={nft.post.ProfileEntryResponse?.Username ? `@${nft.post.ProfileEntryResponse.Username}` : "DeSo creator"}
-                    data-nft-price={nft.lowestBuyNowPrice ?? nft.lowestMinBidAmount ?? ""}
-                  >
-                    {renderNFTCard(nft)}
-                  </div>
-                ))}
+                {collectionNFTs.map(renderNFTCard)}
               </MediaFilter>
             </div>
           </>
