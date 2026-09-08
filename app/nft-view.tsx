@@ -69,6 +69,16 @@ function saleStatus(forSale: NFTEntry[]) {
   return `${forSale.length} for sale`
 }
 
+function mediaStorage(url?: string) {
+  if (!url) return "No media reference"
+  const value = url.toLowerCase()
+  if (value.startsWith("ipfs://") || value.includes("/ipfs/")) return "IPFS / decentralized"
+  if (value.startsWith("ar://") || value.includes("arweave.net/") || value.includes("arweave.dev/")) return "Arweave / decentralized"
+  if (value.startsWith("data:")) return "Embedded data"
+  if (value.startsWith("http://") || value.startsWith("https://")) return "External web host"
+  return "Storage type unknown"
+}
+
 const styles = {
   page: { minHeight: "100vh", background: "#050807", color: "#f4f7f5", fontFamily: "Arial, Helvetica, sans-serif", padding: "32px 20px 64px" },
   container: { width: "100%", maxWidth: "1040px", margin: "0 auto" },
@@ -113,6 +123,8 @@ export default async function NFTView({ postHash, backHref = "/" }: { postHash: 
     const forSale = entries.filter(x => x.IsForSale)
     const creator = post.ProfileEntryResponse?.Username ? `@${post.ProfileEntryResponse.Username}` : shortKey(post.PosterPublicKeyBase58Check)
     const status = saleStatus(forSale)
+    const mediaUrl = post.VideoURLs?.[0] ?? post.ImageURLs?.[0]
+    const storage = mediaStorage(mediaUrl)
 
     return <main style={styles.page}><div style={styles.container}>
       <div style={styles.actions}><BackToCollection href={backHref} style={styles.link}/><CopyNFTLink style={styles.button}/></div>
@@ -120,7 +132,7 @@ export default async function NFTView({ postHash, backHref = "/" }: { postHash: 
       <div style={styles.grid}>
         <div style={styles.media}><NFTMedia imageUrl={post.ImageURLs?.[0]} videoUrl={post.VideoURLs?.[0]} alt={title(post.Body)} imageStyle={styles.image} placeholderStyle={styles.placeholder}/></div>
         <section style={styles.card}>
-          <div style={styles.badge}>DeSo verified</div>
+          <div style={styles.badge}>On DeSo</div>
           {/https?:\/\/nftz\.me\/\S+/i.test(post.Body ?? "") ? <div style={styles.warning}>Legacy nftz.me link detected. VIA reads the NFT directly from DeSo and does not depend on that link.</div> : null}
           <p style={styles.description}>{clean(post.Body) || "No on-chain description available."}</p>
           <dl style={styles.facts}>
@@ -128,6 +140,7 @@ export default async function NFTView({ postHash, backHref = "/" }: { postHash: 
             <div style={styles.fact}><dt style={styles.label}>Copies</dt><dd style={styles.value}>{post.NumNFTCopies ?? entries.length}</dd></div>
             <div style={styles.fact}><dt style={styles.label}>Owners</dt><dd style={styles.value}>{keys.length}</dd></div>
             <div style={styles.fact}><dt style={styles.label}>Sale status</dt><dd style={styles.value}>{status}</dd></div>
+            <div style={styles.fact}><dt style={styles.label}>Media storage</dt><dd style={styles.value}>{storage}</dd></div>
           </dl>
           {owners.length > 1 ? <EditionOwners editions={owners}/> : null}
           <NFTHistory postTimestampNanos={post.TimestampNanos} editionCount={entries.length} uniqueOwnerCount={keys.length} forSaleCount={forSale.length} saleStatus={status}/>
