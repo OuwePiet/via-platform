@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { useState, type CSSProperties } from "react"
+import { useState, type CSSProperties, type MouseEvent } from "react"
 
 type NFTMediaProps = {
   imageUrl?: string
@@ -20,13 +20,17 @@ const mediaWrapperStyle: CSSProperties = {
   position: "relative",
   width: "100%",
   height: "100%",
+  overflow: "hidden",
+  WebkitUserSelect: "none",
+  userSelect: "none",
+  WebkitTouchCallout: "none",
 }
 
 const mediaBadgeStyle: CSSProperties = {
   position: "absolute",
   top: "12px",
   left: "12px",
-  zIndex: 1,
+  zIndex: 3,
   color: "var(--via-accent)",
   background: "rgba(4, 10, 9, 0.88)",
   border: "1px solid rgba(74, 222, 128, 0.34)",
@@ -38,8 +42,72 @@ const mediaBadgeStyle: CSSProperties = {
   pointerEvents: "none",
 }
 
+const protectionLayerStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  zIndex: 2,
+  pointerEvents: "none",
+  background:
+    "linear-gradient(135deg, rgba(248,250,252,0.018), transparent 35%, rgba(74,222,128,0.012) 70%, transparent)",
+}
+
+const viaMarkStyle: CSSProperties = {
+  position: "absolute",
+  right: "clamp(8px, 2.5%, 16px)",
+  bottom: "clamp(8px, 2.5%, 16px)",
+  zIndex: 4,
+  display: "flex",
+  alignItems: "center",
+  gap: "5px",
+  padding: "5px 7px",
+  borderRadius: "999px",
+  color: "rgba(248,250,252,0.9)",
+  background: "rgba(4,10,9,0.46)",
+  border: "1px solid rgba(248,250,252,0.38)",
+  boxShadow: "0 1px 8px rgba(0,0,0,0.24)",
+  fontSize: "9px",
+  fontWeight: 800,
+  letterSpacing: "0.12em",
+  lineHeight: 1,
+  pointerEvents: "none",
+  backdropFilter: "blur(2px)",
+}
+
+const leafStyle: CSSProperties = {
+  width: "10px",
+  height: "14px",
+  display: "block",
+  borderRadius: "100% 0 100% 0",
+  transform: "rotate(-36deg)",
+  background:
+    "linear-gradient(135deg, #ffffff 0%, #d7dde0 38%, #9aa6aa 68%, #f8fafc 100%)",
+  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.35)",
+}
+
 function MediaBadge({ label }: { label: string }) {
   return <span style={mediaBadgeStyle}>{label}</span>
+}
+
+function ViaProtectionMark() {
+  return (
+    <span style={viaMarkStyle} aria-hidden="true">
+      <span style={leafStyle} />
+      VIA
+    </span>
+  )
+}
+
+function ProtectedPresentation() {
+  return (
+    <>
+      <span style={protectionLayerStyle} aria-hidden="true" />
+      <ViaProtectionMark />
+    </>
+  )
+}
+
+function preventContextMenu(event: MouseEvent<HTMLElement>) {
+  event.preventDefault()
 }
 
 function filePath(url: string) {
@@ -125,18 +193,22 @@ export default function NFTMedia({
 
   if (kind === "video") {
     return (
-      <div style={mediaWrapperStyle}>
+      <div style={mediaWrapperStyle} onContextMenu={preventContextMenu}>
         <MediaBadge label="Video" />
         <video
           key={currentUrl}
           src={currentUrl}
           aria-label={alt}
           controls
+          controlsList="nodownload"
+          disablePictureInPicture
           playsInline
           preload="metadata"
+          draggable={false}
           style={imageStyle}
           onError={tryNextCandidate}
         />
+        <ProtectedPresentation />
       </div>
     )
   }
@@ -150,6 +222,7 @@ export default function NFTMedia({
           src={currentUrl}
           aria-label={alt}
           controls
+          controlsList="nodownload"
           preload="metadata"
           style={{ width: "calc(100% - 40px)" }}
           onError={tryNextCandidate}
@@ -159,7 +232,7 @@ export default function NFTMedia({
   }
 
   return (
-    <div style={mediaWrapperStyle}>
+    <div style={mediaWrapperStyle} onContextMenu={preventContextMenu}>
       <MediaBadge label="Image" />
       <Image
         key={currentUrl}
@@ -170,9 +243,11 @@ export default function NFTMedia({
         sizes="(max-width: 600px) 100vw, 600px"
         loader={passthroughLoader}
         unoptimized
-        style={imageStyle}
+        draggable={false}
+        style={{ ...imageStyle, WebkitUserDrag: "none", userSelect: "none" } as CSSProperties}
         onError={tryNextCandidate}
       />
+      <ProtectedPresentation />
     </div>
   )
 }
