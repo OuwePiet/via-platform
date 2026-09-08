@@ -14,20 +14,20 @@ const styles = {
     fontFamily: "Arial, Helvetica, sans-serif",
   },
   eyebrow: {
-    color: "#5cff9d",
+    color: "var(--via-accent)",
     fontSize: "12px",
     fontWeight: 800,
     letterSpacing: "0.16em",
     textTransform: "uppercase" as const,
   },
   title: {
-    color: "#f4f7f5",
+    color: "var(--via-text)",
     fontSize: "clamp(28px, 5vw, 48px)",
     lineHeight: 1.05,
     margin: "8px 0 10px",
   },
   intro: {
-    color: "#a9b8af",
+    color: "var(--via-muted)",
     maxWidth: "760px",
     lineHeight: 1.6,
     margin: 0,
@@ -40,15 +40,15 @@ const styles = {
   },
   module: {
     display: "block",
-    color: "#dce8e0",
-    background: "#0c120f",
-    border: "1px solid #254233",
+    color: "var(--via-text)",
+    background: "var(--via-surface)",
+    border: "1px solid color-mix(in srgb, var(--via-accent) 28%, transparent)",
     borderRadius: "14px",
     padding: "14px",
     textDecoration: "none",
   },
-  moduleTitle: { color: "#5cff9d", fontWeight: 800, marginBottom: "5px" },
-  moduleText: { color: "#91a298", fontSize: "13px", lineHeight: 1.45 },
+  moduleTitle: { color: "var(--via-accent)", fontWeight: 800, marginBottom: "5px" },
+  moduleText: { color: "var(--via-muted)", fontSize: "13px", lineHeight: 1.45 },
 }
 
 export default async function Home({ searchParams }: HomeProps) {
