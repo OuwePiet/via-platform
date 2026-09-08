@@ -2,8 +2,17 @@
   box-sizing: border-box;
 }
 
+:root {
+  --via-bg: #040A09;
+  --via-surface: #0A1614;
+  --via-accent: #4ADE80;
+  --via-text: #F8FAFC;
+  --via-muted: #A1B0C0;
+  --via-action: #22C55E;
+}
+
 html {
-  background: #050807;
+  background: var(--via-bg);
 }
 
 html,
@@ -14,8 +23,8 @@ body {
 }
 
 body {
-  background: #050807;
-  color: #f4f7f5;
+  background: var(--via-bg);
+  color: var(--via-text);
 }
 
 button,
